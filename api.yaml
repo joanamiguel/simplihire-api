@@ -1,0 +1,86 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: API PEI - SimpliHire
+  license:
+    name: MIT
+host: localhost
+basePath: /v1
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  '/candidatos/{idCandidato}/':
+    get:
+      summary: Ao chamar este endpoint devolve informação pessoal de um candidato
+      operationId: getCandidatoById
+      tags:
+        - candidatos
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato a obter
+          type: string
+      responses:
+        '200':
+          description: Um candidato
+          schema:
+            $ref: '#/definitions/Candidato'
+  '/candidatos/{idCandidato}/propostas':
+    get:
+      summary: Ao chamar este endpoint devolve a lista de propostas do candidato
+      operationId: getPropostasCandidato
+      tags:
+        - candidatos
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato a quem as propostas a obter pertencem
+          type: string
+      responses:
+        '200':
+          description: Uma lista das propostas
+          schema:
+            $ref: '#/definitions/Propostas'
+definitions:
+  Candidato:
+    required:
+      - id
+      - nome
+      - email
+      - universidade
+    properties:
+      id:
+        type: integer
+        format: int64
+      nome:
+        type: string
+      email:
+        type: string
+      universidade:
+        type: string
+  Propostas:
+    type: array
+    items:
+      $ref: '#/definitions/Proposta'
+  Proposta:
+    required:
+      - id
+      - empresa
+      - posicao
+      - dataLimite
+    properties:
+      id:
+        type: integer
+        format: int64
+      empresa:
+        type: string
+      posicao:
+        type: string
+      dataLimite:
+        type: string
