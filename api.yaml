@@ -8,14 +8,25 @@ host: localhost
 basePath: /v1
 schemes:
   - http
+  - https
 consumes:
   - application/json
 produces:
   - application/json
+tags:
+- name: "recrutador"
+  description: "Operações relativos aos recrutadores"
+- name: "avalidadortecnico"
+  description: "Operações relativos aos avaliadores técnicos"
+- name: "candidatos"
+  description: "Operações relativos aos candidatos"
+- name: "empresa"
+  description: "Operações relativos à empresa empregadora"
 paths:
   '/candidatos/{idCandidato}/':
     get:
-      summary: Ao chamar este endpoint devolve informação pessoal de um candidato
+      summary: Informação de um candidato
+      description: Ao chamar este endpoint devolve informação pessoal de um candidato
       operationId: getCandidatoById
       tags:
         - candidatos
@@ -47,6 +58,40 @@ paths:
           description: Uma lista das propostas
           schema:
             $ref: '#/definitions/Propostas'
+  '/candidatos/login':
+    get:
+      summary: Ao chamar este endpoint devolve a lista de propostas do candidato
+      operationId: loginCandidatos
+      tags:
+        - candidatos
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato a quem as propostas a obter pertencem
+          type: string
+      responses:
+        '200':
+          description: Uma lista das propostas
+          schema:
+            $ref: '#/definitions/Propostas'
+  '/empresa/login':
+    get:
+      summary: Ao chamar este endpoint devolve a lista de propostas do candidato
+      operationId: loginEmpresa
+      tags:
+        - empresa
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato a quem as propostas a obter pertencem
+          type: string
+      responses:
+        '200':
+          description: Uma lista das propostas
+          schema:
+            $ref: '#/definitions/Propostas'      
 definitions:
   Candidato:
     required:
@@ -64,10 +109,10 @@ definitions:
         type: string
       universidade:
         type: string
-  Propostas:
+  Candidatos:
     type: array
     items:
-      $ref: '#/definitions/Proposta'
+      $ref: '#/definitions/Candidato'
   Proposta:
     required:
       - id
@@ -83,4 +128,56 @@ definitions:
       posicao:
         type: string
       dataLimite:
+        type: string    
+  Propostas:
+    type: array
+    items:
+      $ref: '#/definitions/Proposta'
+  Exame Técnico:
+    required:
+      - id
+      - nome
+      - email
+      - universidade
+    properties:
+      id:
+        type: integer
+        format: int64
+      nome:
         type: string
+      email:
+        type: string
+      universidade:
+        type: string
+  Pergunta Técnica:
+    required:
+      - id
+      - nome
+      - email
+      - universidade
+    properties:
+      id:
+        type: integer
+        format: int64
+      nome:
+        type: string
+      email:
+        type: string
+      universidade:
+        type: string
+  Mensagem:
+    required:
+      - id
+      - nome
+      - email
+      - universidade
+    properties:
+      id:
+        type: integer
+        format: int64
+      nome:
+        type: string
+      email:
+        type: string
+      universidade:
+        type: string  
