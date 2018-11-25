@@ -46,10 +46,6 @@ paths:
                 $ref: '#/components/schemas/LoginAnswer'
         '401':
           description: Password Errada / Utilizador não existente
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LoginAnswer'
   /empresa/logout:
     get:
       summary: Terminar sessão
@@ -206,7 +202,8 @@ paths:
                 $ref: '#/components/schemas/Candidato'
   '/candidatos/{idCandidato}/propostas':
     get:
-      summary: Ao chamar este endpoint devolve a lista de propostas do candidato
+      summary: Lista de propostas do candidato
+      description: Ao chamar este endpoint devolve a lista de propostas do candidato 
       operationId: getPropostasCandidato
       tags:
         - Candidatos
@@ -226,26 +223,33 @@ paths:
                 $ref: '#/components/schemas/Propostas'
   /candidatos/login:
     get:
-      summary: Ao chamar este endpoint devolve a lista de propostas do candidato
+      summary: Início de sessão do lado do candidato
       operationId: loginCandidatos
       tags:
         - Candidatos
       parameters:
-        - name: idCandidato
+        - name: username
           in: path
           required: true
-          description: O id do candidato a quem as propostas a obter pertencem
+          description: O username do utilizador
+          schema:
+            type: string
+        - name: password
+          in: path
+          required: true
+          description: A password do utilizador
           schema:
             type: string
       responses:
         '200':
-          description: Uma lista das propostas
+          description: Mensagem a identificar sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Propostas'
+                $ref: '#/components/schemas/LoginAnswer'
+        '401':
+          description: Password Errada / Utilizador não existente
   
-
 components:
   securitySchemes:
     jwtAuth:            # arbitrary name for the security scheme
@@ -316,8 +320,9 @@ components:
       properties:
         loggedIn:
           type: boolean
-        userType:
+        JWT:
           type: string
+          description: JSON Web Token
     Status:
       description: Se o pedido efetuado teve sucesso ou erro
       required:
