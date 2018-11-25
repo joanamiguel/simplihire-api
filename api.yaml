@@ -14,22 +14,106 @@ consumes:
 produces:
   - application/json
 tags:
-- name: "recrutador"
+- name: "Recrutador"
   description: "Operações relativos aos recrutadores"
-- name: "avalidadortecnico"
+- name: "Avalidador Técnico"
   description: "Operações relativos aos avaliadores técnicos"
-- name: "candidatos"
+- name: "Candidatos"
   description: "Operações relativos aos candidatos"
-- name: "empresa"
+- name: "Empresa"
   description: "Operações relativos à empresa empregadora"
 paths:
+  #Empresa Recrutadora (Funcionalidades comuns)
+  '/empresa/login':
+    get:
+      summary: Início de sessão
+      description: Ao chamar este endpoint o utilizador de uma empresa empregadora é autentificado
+      operationId: loginEmpresa
+      tags:
+        - Empresa
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: O username do utilizador
+          type: string
+        - name: password
+          in: path
+          required: true
+          description: A password do utilizador
+          type: string          
+      responses:
+        '200':
+          description: Mensagem a identificar sucesso
+          schema:
+            $ref: '#/definitions/LoginAnswer'   
+        '401':
+          description: Password Errada / Utilizador não existente
+          schema:
+            $ref: '#/definitions/LoginAnswer'           
+  '/empresa/logout':
+    get:
+      summary: Terminar sessão
+      description: Ao chamar este endpoint é terminada a sessão de um utilizador de uma empresa empregadora
+      operationId: logoutEmpresa
+      tags:
+        - Empresa
+      responses:
+        '200':
+          description: Utilizador com sessão terminada
+  '/propostas/{idProposta}/':
+    get:
+      summary: Informação de uma proposta
+      description: Ao chamar este endpoint devolve informação de uma proposta de emprego
+      operationId: getPropostaByID
+      tags:
+        - Empresa
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta a obter
+          type: string
+      responses:
+        '200':
+          description: Um candidato
+          schema:
+            $ref: '#/definitions/Proposta'
+  #Recrutador
+  '/propostas/propostasAdicionadas':
+    get:
+      summary: Propostas Adicionadas
+      description: Ao chamar este endpoint devolve informações de todas as propostas adicionadas pela empresa
+      operationId: propostasAdicionadas
+      tags:
+        - Recrutador
+      responses:
+        '200':
+          description: As propostas adicionadas
+          schema:
+            $ref: '#/definitions/Propostas'
+  '/propostas/propostasPublicadas':
+    get:
+      summary: Propostas Adicionadas
+      description: Ao chamar este endpoint devolve informações de todas as propostas publicadas pela empresa
+      operationId: propostasPublicadas
+      tags:
+        - Recrutador
+      responses:
+        '200':
+          description: As propostas publicadas
+          schema:
+            $ref: '#/definitions/Propostas'            
+  #Avaliador Técnico
+  
+  #Candidato
   '/candidatos/{idCandidato}/':
     get:
       summary: Informação de um candidato
       description: Ao chamar este endpoint devolve informação pessoal de um candidato
       operationId: getCandidatoById
       tags:
-        - candidatos
+        - Candidatos
       parameters:
         - name: idCandidato
           in: path
@@ -46,7 +130,7 @@ paths:
       summary: Ao chamar este endpoint devolve a lista de propostas do candidato
       operationId: getPropostasCandidato
       tags:
-        - candidatos
+        - Candidatos
       parameters:
         - name: idCandidato
           in: path
@@ -63,7 +147,7 @@ paths:
       summary: Ao chamar este endpoint devolve a lista de propostas do candidato
       operationId: loginCandidatos
       tags:
-        - candidatos
+        - Candidatos
       parameters:
         - name: idCandidato
           in: path
@@ -75,23 +159,6 @@ paths:
           description: Uma lista das propostas
           schema:
             $ref: '#/definitions/Propostas'
-  '/empresa/login':
-    get:
-      summary: Ao chamar este endpoint devolve a lista de propostas do candidato
-      operationId: loginEmpresa
-      tags:
-        - empresa
-      parameters:
-        - name: idCandidato
-          in: path
-          required: true
-          description: O id do candidato a quem as propostas a obter pertencem
-          type: string
-      responses:
-        '200':
-          description: Uma lista das propostas
-          schema:
-            $ref: '#/definitions/Propostas'      
 definitions:
   Candidato:
     required:
@@ -180,4 +247,13 @@ definitions:
       email:
         type: string
       universidade:
+        type: string  
+  LoginAnswer:
+    required:
+      - loggedIn
+      - userType
+    properties:
+      loggedIn:
+        type: boolean
+      userType:
         type: string  
