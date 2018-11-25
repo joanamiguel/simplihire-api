@@ -1,33 +1,26 @@
-swagger: '2.0'
+openapi: 3.0.0
 info:
-  version: 1.0.0
+  version: "1.0.0-oas3"
   title: API PEI - SimpliHire
   license:
     name: MIT
-host: localhost
-basePath: /v1
-schemes:
-  - http
-  - https
-consumes:
-  - application/json
-produces:
-  - application/json
 tags:
-- name: "Recrutador"
-  description: "Operações relativos aos recrutadores"
-- name: "Avalidador Técnico"
-  description: "Operações relativos aos avaliadores técnicos"
-- name: "Candidatos"
-  description: "Operações relativos aos candidatos"
-- name: "Empresa"
-  description: "Operações relativos à empresa empregadora"
+  - name: Recrutador
+    description: Operações relativos aos recrutadores
+  - name: Avalidador Técnico
+    description: Operações relativos aos avaliadores técnicos
+  - name: Candidatos
+    description: Operações relativos aos candidatos
+  - name: Empresa
+    description: Operações relativos à empresa empregadora
 paths:
   #Empresa Recrutadora (Funcionalidades comuns)
-  '/empresa/login':
+  /empresa/login:
     get:
       summary: Início de sessão
-      description: Ao chamar este endpoint o utilizador de uma empresa empregadora é autentificado
+      description: >-
+        Ao chamar este endpoint o utilizador de uma empresa empregadora é
+        autentificado
       operationId: loginEmpresa
       tags:
         - Empresa
@@ -36,25 +29,33 @@ paths:
           in: path
           required: true
           description: O username do utilizador
-          type: string
+          schema:
+            type: string
         - name: password
           in: path
           required: true
           description: A password do utilizador
-          type: string          
+          schema:
+            type: string
       responses:
         '200':
           description: Mensagem a identificar sucesso
-          schema:
-            $ref: '#/definitions/LoginAnswer'   
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginAnswer'
         '401':
           description: Password Errada / Utilizador não existente
-          schema:
-            $ref: '#/definitions/LoginAnswer'           
-  '/empresa/logout':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginAnswer'
+  /empresa/logout:
     get:
       summary: Terminar sessão
-      description: Ao chamar este endpoint é terminada a sessão de um utilizador de uma empresa empregadora
+      description: >-
+        Ao chamar este endpoint é terminada a sessão de um utilizador de uma
+        empresa empregadora
       operationId: logoutEmpresa
       tags:
         - Empresa
@@ -73,39 +74,114 @@ paths:
           in: path
           required: true
           description: O id da proposta a obter
-          type: string
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
       responses:
         '200':
           description: Um candidato
-          schema:
-            $ref: '#/definitions/Proposta'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Proposta'
   #Recrutador
-  '/propostas/propostasAdicionadas':
+  /propostas/propostasAdicionadas:
     get:
       summary: Propostas Adicionadas
-      description: Ao chamar este endpoint devolve informações de todas as propostas adicionadas pela empresa
+      description: >-
+        Ao chamar este endpoint devolve informações de todas as propostas
+        adicionadas pela empresa
       operationId: propostasAdicionadas
+      security:
+        - jwtAuth: []
       tags:
         - Recrutador
       responses:
         '200':
           description: As propostas adicionadas
-          schema:
-            $ref: '#/definitions/Propostas'
-  '/propostas/propostasPublicadas':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Propostas'
+  /propostas/propostasPublicadas:
     get:
       summary: Propostas Adicionadas
-      description: Ao chamar este endpoint devolve informações de todas as propostas publicadas pela empresa
+      description: >-
+        Ao chamar este endpoint devolve informações de todas as propostas
+        publicadas pela empresa
       operationId: propostasPublicadas
+      security:
+        - jwtAuth: []
       tags:
         - Recrutador
       responses:
         '200':
           description: As propostas publicadas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Propostas'
+  '/propostas/{idProposta}/publicar':
+    put:
+      summary: Publicação de uma proposta
+      description: Ao chamar este endpoint uma proposta adicionada é públicada no sistema
+      operationId: publishPropostaByID
+      tags:
+        - Recrutador
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta a publicar
           schema:
-            $ref: '#/definitions/Propostas'            
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Proposta publicada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Proposta publicada com erro
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/propostas/{idProposta}/encerrar':
+    put:
+      summary: Encerramento de uma proposta
+      description: Ao chamar este endpoint uma proposta adicionada é encerrada no sistema
+      operationId: closePropostaByID
+      tags:
+        - Recrutador
+      security:
+        - jwtAuth: []
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta a encerrar
+          schema:
+            type: string
+      
+      responses:
+        '200':
+          description: Proposta encerrada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Proposta encerrada com erro
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
   #Avaliador Técnico
-  
   #Candidato
   '/candidatos/{idCandidato}/':
     get:
@@ -119,12 +195,15 @@ paths:
           in: path
           required: true
           description: O id do candidato a obter
-          type: string
+          schema:
+            type: string
       responses:
         '200':
           description: Um candidato
-          schema:
-            $ref: '#/definitions/Candidato'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Candidato'
   '/candidatos/{idCandidato}/propostas':
     get:
       summary: Ao chamar este endpoint devolve a lista de propostas do candidato
@@ -136,13 +215,16 @@ paths:
           in: path
           required: true
           description: O id do candidato a quem as propostas a obter pertencem
-          type: string
+          schema:
+            type: string
       responses:
         '200':
           description: Uma lista das propostas
-          schema:
-            $ref: '#/definitions/Propostas'
-  '/candidatos/login':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Propostas'
+  /candidatos/login:
     get:
       summary: Ao chamar este endpoint devolve a lista de propostas do candidato
       operationId: loginCandidatos
@@ -153,107 +235,129 @@ paths:
           in: path
           required: true
           description: O id do candidato a quem as propostas a obter pertencem
-          type: string
+          schema:
+            type: string
       responses:
         '200':
           description: Uma lista das propostas
-          schema:
-            $ref: '#/definitions/Propostas'
-definitions:
-  Candidato:
-    required:
-      - id
-      - nome
-      - email
-      - universidade
-    properties:
-      id:
-        type: integer
-        format: int64
-      nome:
-        type: string
-      email:
-        type: string
-      universidade:
-        type: string
-  Candidatos:
-    type: array
-    items:
-      $ref: '#/definitions/Candidato'
-  Proposta:
-    required:
-      - id
-      - empresa
-      - posicao
-      - dataLimite
-    properties:
-      id:
-        type: integer
-        format: int64
-      empresa:
-        type: string
-      posicao:
-        type: string
-      dataLimite:
-        type: string    
-  Propostas:
-    type: array
-    items:
-      $ref: '#/definitions/Proposta'
-  Exame Técnico:
-    required:
-      - id
-      - nome
-      - email
-      - universidade
-    properties:
-      id:
-        type: integer
-        format: int64
-      nome:
-        type: string
-      email:
-        type: string
-      universidade:
-        type: string
-  Pergunta Técnica:
-    required:
-      - id
-      - nome
-      - email
-      - universidade
-    properties:
-      id:
-        type: integer
-        format: int64
-      nome:
-        type: string
-      email:
-        type: string
-      universidade:
-        type: string
-  Mensagem:
-    required:
-      - id
-      - nome
-      - email
-      - universidade
-    properties:
-      id:
-        type: integer
-        format: int64
-      nome:
-        type: string
-      email:
-        type: string
-      universidade:
-        type: string  
-  LoginAnswer:
-    required:
-      - loggedIn
-      - userType
-    properties:
-      loggedIn:
-        type: boolean
-      userType:
-        type: string  
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Propostas'
+  
+
+components:
+  securitySchemes:
+    jwtAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Candidato:
+      required:
+        - id
+        - nome
+        - email
+        - universidade
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        email:
+          type: string
+        universidade:
+          type: string
+    Candidatos:
+      type: array
+      items:
+        $ref: '#/components/schemas/Candidato'
+    Proposta:
+      required:
+        - id
+        - empresa
+        - posicao
+        - dataLimite
+      properties:
+        id:
+          type: integer
+          format: int64
+        empresa:
+          type: string
+        posicao:
+          type: string
+        dataLimite:
+          type: string
+    Propostas:
+      type: array
+      items:
+        $ref: '#/components/schemas/Proposta'
+    Mensagem:
+      required:
+        - id
+        - nome
+        - email
+        - universidade
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        email:
+          type: string
+        universidade:
+          type: string
+    LoginAnswer:
+      required:
+        - loggedIn
+        - userType
+      properties:
+        loggedIn:
+          type: boolean
+        userType:
+          type: string
+    Status:
+      description: Se o pedido efetuado teve sucesso ou erro
+      required:
+        - status
+      properties:
+        ok:
+          type: boolean
+          description: 'True se teve sucesso, False se houver erro'
+        error:
+          type: string
+          description: Descrição de erro
+    Exame_Técnico:
+      required:
+        - id
+        - nome
+        - email
+        - universidade
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        email:
+          type: string
+        universidade:
+          type: string
+    Pergunta_Técnica:
+      required:
+        - id
+        - nome
+        - email
+        - universidade
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        email:
+          type: string
+        universidade:
+          type: string
