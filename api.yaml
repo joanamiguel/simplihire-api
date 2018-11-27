@@ -1,26 +1,23 @@
 openapi: 3.0.0
 info:
-  version: "1.0.0-oas3"
+  version: 1.0.0-oas3
   title: API PEI - SimpliHire
   license:
     name: MIT
 tags:
   - name: Recrutador
-    description: Operações relativos aos recrutadores
-  - name: Avalidador Técnico
-    description: Operações relativos aos avaliadores técnicos
+    description: Operações que os recrutadores têm acesso
+  - name: Avaliador Técnico
+    description: Operações que os avalidadores técnicos têm acesso
   - name: Candidatos
     description: Operações relativos aos candidatos
   - name: Empresa
     description: Operações relativos à empresa empregadora
 paths:
-  #Empresa Recrutadora (Funcionalidades comuns)
   /empresa/login:
     get:
       summary: Início de sessão
-      description: >-
-        Ao chamar este endpoint o utilizador de uma empresa empregadora é
-        autentificado
+      description: Ao chamar este endpoint o utilizador de uma empresa empregadora é autentificado
       operationId: loginEmpresa
       tags:
         - Empresa
@@ -49,9 +46,7 @@ paths:
   /empresa/logout:
     get:
       summary: Terminar sessão
-      description: >-
-        Ao chamar este endpoint é terminada a sessão de um utilizador de uma
-        empresa empregadora
+      description: Ao chamar este endpoint é terminada a sessão de um utilizador de uma empresa empregadora
       operationId: logoutEmpresa
       tags:
         - Empresa
@@ -81,13 +76,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Proposta'
-  #Recrutador
   /propostas/propostasAdicionadas:
     get:
       summary: Propostas Adicionadas
-      description: >-
-        Ao chamar este endpoint devolve informações de todas as propostas
-        adicionadas pela empresa
+      description: Ao chamar este endpoint devolve informações de todas as propostas adicionadas pela empresa
       operationId: propostasAdicionadas
       security:
         - jwtAuth: []
@@ -103,9 +95,7 @@ paths:
   /propostas/propostasPublicadas:
     get:
       summary: Propostas Adicionadas
-      description: >-
-        Ao chamar este endpoint devolve informações de todas as propostas
-        publicadas pela empresa
+      description: Ao chamar este endpoint devolve informações de todas as propostas publicadas pela empresa
       operationId: propostasPublicadas
       security:
         - jwtAuth: []
@@ -163,7 +153,6 @@ paths:
           description: O id da proposta a encerrar
           schema:
             type: string
-      
       responses:
         '200':
           description: Proposta encerrada com sucesso
@@ -177,8 +166,178 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  #Avaliador Técnico
-  #Candidato
+  '/propostas/':
+    post:
+      summary: Criação de uma proposta
+      description: Ao chamar este endpoint uma proposta adicionada é criada
+      operationId: publishPropostaByID
+      tags:
+        - Recrutador
+      security:
+        - jwtAuth: []
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Proposta'
+      responses:
+        '200':
+          description: Proposta publicada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Proposta publicada com erro
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/candidaturas/{idProposta}/':
+    get:
+      summary: Lista sorteada de candidaturas de uma proposta
+      description: Lista ordenada (por pontuação) das candidaturas a uma proposta
+      operationId: candidaturasOrdenadas
+      tags:
+        - Recrutador
+        - Avaliador Técnico
+      security:
+        - jwtAuth: []
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta a procurar
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Candidaturas obtidas com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Candidaturas'
+        '400':
+          description: Erro a obter proposta
+        '401':
+          description: Não Autorizado
+        '404':
+          description: Proposta não encontrada
+  '/candidaturas/{idProposta}/{idCandidato}':
+    get:
+      summary: Obter candidatura (Proposta+Candidato)
+      description: Obter informações de uma candidatura de um candidato a uma proposta
+      operationId: getCandidaturaByProposta\&Candidato
+      tags:
+        - Recrutador
+        - Avaliador Técnico
+      security:
+        - jwtAuth: []
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta a procurar
+          schema:
+            type: string
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato a procurar
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Candidatura obtidas com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Candidatura'
+        '400':
+          description: Erro a obter proposta
+        '401':
+          description: Não Autorizado
+        '404':
+          description: Proposta não encontrada
+  '/candidaturas/{idProposta}/{idCandidato}/anotacoes':
+    get:
+      summary: Obter anotações de uma candidatura
+      description: Obter anotações de uma candidatura de um candidato a uma proposta
+      operationId: getAnotacoesCandidatura
+      tags:
+        - Recrutador
+        - Avaliador Técnico
+      security:
+        - jwtAuth: []
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta a procurar
+          schema:
+            type: string
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato a procurar
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Anotações obtidas com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Candidatura'
+        '400':
+          description: Erro a obter anotações
+        '401':
+          description: Não Autorizado
+        '404':
+          description: Candidatura não encontrada
+  '/candidaturas/{idProposta}/{idCandidato}/anotacoes/publicar':
+    put:
+      summary: Publicar anotações de uma candidatura
+      description: Publicar anotações de uma candidatura de um candidato a uma proposta
+      operationId: putAnotacoesCandidatura
+      tags:
+        - Avaliador Técnico
+      security:
+        - jwtAuth: []
+      requestBody:
+          description: Optional description in *Markdown*
+          required: true
+          content:
+            text/plain:
+              schema:
+                type: string
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta a procurar
+          schema:
+            type: string
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato a procurar
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Anotações publicadas com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Candidatura'
+        '400':
+          description: Erro a obter anotações
+        '401':
+          description: Não Autorizado
+        '404':
+          description: Candidatura não encontrada
   '/candidatos/{idCandidato}/':
     get:
       summary: Informação de um candidato
@@ -203,7 +362,7 @@ paths:
   '/candidatos/{idCandidato}/propostas':
     get:
       summary: Lista de propostas do candidato
-      description: Ao chamar este endpoint devolve a lista de propostas do candidato 
+      description: Ao chamar este endpoint devolve a lista de propostas do candidato
       operationId: getPropostasCandidato
       tags:
         - Candidatos
@@ -249,10 +408,9 @@ paths:
                 $ref: '#/components/schemas/LoginAnswer'
         '401':
           description: Password Errada / Utilizador não existente
-  
 components:
   securitySchemes:
-    jwtAuth:            # arbitrary name for the security scheme
+    jwtAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
@@ -366,3 +524,23 @@ components:
           type: string
         universidade:
           type: string
+    Candidatura:
+      required:
+        - id
+        - nome
+        - email
+        - universidade
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        email:
+          type: string
+        universidade:
+          type: string
+    Candidaturas:
+      type: array
+      items:
+        $ref: '#/components/schemas/Candidatura'
