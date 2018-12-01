@@ -92,6 +92,122 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Propostas'
+  '/propostas/{idProposta}/getFaseProposta':
+    get:
+      summary: GET fase de uma proposta
+      description: Ao chamar este endpoint devolve a fase em que uma determinada proposta se encontra
+      operationId: fasePropostaPorId
+      security:
+        - jwtAuth: []
+      tags:
+        - Recrutador
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta à qual se quer descobrir a fase
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A fase da proposta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Propostas'
+  '/propostas/{idProposta}/getEstadoProposta':
+    get:
+      summary: GET estado de uma proposta
+      description: Ao chamar este endpoint devolve o estado em que uma determinada proposta se encontra
+      operationId: faseEstadoPorId
+      security:
+        - jwtAuth: []
+      tags:
+        - Recrutador
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta à qual se quer descobrir o estado
+          schema:
+            type: string
+      responses:
+        '200':
+          description: O estado da proposta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Propostas'
+  '/propostas/{idProposta}/putEstadoProposta/{estado}':
+    put:
+      summary: Adiciona estado a proposta de emprego
+      description: Ao chamar este endpoint será adicionada um estado a uma determinada proposta de emprego
+      operationId: putEstadoEmPropostaPorIds
+      tags:
+        - Recrutador
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string
+        - name: estado
+          in: path
+          required: true
+          description: O estado que se quer adicionar à proposta
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Estado adicionado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Erro ao adicionar o estado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/propostas/{idProposta}/putFaseProposta/{fase}':
+    put:
+      summary: Adiciona fase a proposta de emprego
+      description: Ao chamar este endpoint será adicionada uma fase a uma determinada proposta de emprego
+      operationId: putFaseEmPropostaPorIds
+      tags:
+        - Recrutador
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string
+        - name: fase
+          in: path
+          required: true
+          description: A fase que se quer adicionar à proposta
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Fase adicionada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Erro ao adicionar a fase
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
   '/propostas/propostasPublicadas':
     get:
       summary: Propostas Adicionadas
@@ -108,6 +224,41 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Propostas'
+  '/propostas/{idProposta}/associarAvaliadorTecnico':
+    put:
+      summary: Associar avaliador técnico a uma proposta de emprego
+      description: Ao chamar este endpoint um avaliador técnico será associado a uma proposta de emprego
+      operationId: associaAvaliadorAPropostaPorIds
+      tags:
+        - Recrutador
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string
+        - name: idAvaliador
+          in: path
+          required: true
+          description: O id do avaliador a ser associado à proposta
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Avaliador associado com sucesso à proposta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Erro a associador o avaliador à proposta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
   '/propostas/{idProposta}/publicar':
     put:
       summary: Publicação de uma proposta
@@ -228,6 +379,135 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Candidatura'
+  '/candidatos/{idCandidato}/proposta/{idProposta}/SituacaoCandidatura':
+    get:
+      summary: Situacao de uma candidatura
+      description: A invocação deste endpoint retorna a situacao de uma candidatura
+      operationId: getSituacao
+      tags:
+        - Candidatos
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato
+          schema:
+            type: string
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Situacao relativa a uma candidatura a uma proposta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Candidatura'
+  '/candidatos/{idCandidato}/proposta{idProposta}/putAnotacoes/{tecnicas}/{salario}/{rh}/{gestao}/{avaliacao}':
+    put:
+      summary: Adiciona anotacoes a uma candidatura
+      description: A invocação deste endpoint envolve a atribuição de anotações a uma candidatura
+      operationId: putAnotacoesNumaCandidatura
+      tags:
+        - Candidatos
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato
+          schema:
+            type: string
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string
+        - name: tecnicas
+          in: path
+          required: true
+          description: Tecnicas
+          schema:
+            type: string
+        - name: salario
+          in: path
+          required: true
+          description: Salário
+          schema:
+            type: integer
+        - name: rh
+          in: path
+          required: true
+          description: Recursos Humanos
+          schema:
+            type: string
+        - name: gestao
+          in: path
+          required: true
+          description: Gestão
+          schema:
+            type: string
+        - name: avaliacao
+          in: path
+          required: true
+          description: Avaliação da candidatura
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Anotações adicionadas com sucesso à candidatura
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Candidatura'
+  '/candidatos/{idCandidato}/proposta{idProposta}/putAnotacoes/{tecnicas}/{avaliacao}/{entrevista}':
+    put:
+      summary: Adiciona anotacoes a uma candidatura
+      description: A invocação deste endpoint envolve a atribuição de anotações a uma candidatura
+      operationId: putAnotacoesNumaCandidatura
+      tags:
+        - Candidatos
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato
+          schema:
+            type: string
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string
+        - name: tecnicas
+          in: path
+          required: true
+          description: Tecnicas
+          schema:
+            type: string
+        - name: entrevista
+          in: path
+          required: true
+          description: Tecnicas
+          schema:
+            type: string 
+        - name: avaliacao
+          in: path
+          required: true
+          description: Avaliação da candidatura
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Anotações adicionadas com sucesso à candidatura
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Candidatura'
   '/candidatos/{idCandidato}/proposta/{idProposta}/submeterCandidatura':
     put:
       summary: Submissão de uma candidatura a uma proposta de emprego
@@ -338,6 +618,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/QualificacoesTecnicas'
+  '/candidatos/{idCandidato}/experienciaCandidato':
+    get:
+      summary: Experiência de um candidato
+      description: Este endpoint devolve a experiência profissional do candidato
+      operationId: getExperienciaProfissional
+      tags:
+        - Candidatos
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O ID do candidato com a experiência profissional que se pretende obter
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A experiência profissional do candidato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperienciaProfissional'   
   '/candidatos/{idCandidato}/qualificacoes':
     put:
       summary: Indicação das qualificações técnicas de um candidato
@@ -359,6 +660,93 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/QualificacoesTecnicas'
+  '/candidatos/{idCandidato}/experienciaProfissional':
+    put:
+      summary: Indicação da experiência de um candidato
+      description: O candidato submete a sua experiência profissional
+      operationId: putExperiencia
+      tags:
+        - Candidatos
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato que submete a experiência profissional
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Experiência profissional submetida com sucesso!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperienciaProfissional'
+  '/candidatos/{idCandidato}/proposta{idProposta}/putEstado/{estado}':
+    put:
+      summary: Associa estado a uma candidatura
+      description: A invocação deste endpoint envolve a atribuição de um estado a uma candidatura
+      operationId: putEstadoEmCandidatura
+      tags:
+        - Candidatos
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato
+          schema:
+            type: string
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string
+        - name: estado
+          in: path
+          required: true
+          description: O estado da candidatura
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Estado adicionado à candidatura com sucesso!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Candidatura'
+  '/candidatos/{idCandidato}/proposta{idProposta}/putSituacao/{situacao}':
+    put:
+      summary: Associa situacao a uma candidatura
+      description: A invocação deste endpoint envolve a atribuição de uma situacao a uma candidatura
+      operationId: putSituacaoEmCandidatura
+      tags:
+        - Candidatos
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato
+          schema:
+            type: string
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string
+        - name: situacao
+          in: path
+          required: true
+          description: A situacao da candidatura
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Situacao adicionada à candidatura com sucesso!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Candidatura'
   '/candidatos/{idCandidato}/propostas':
     get:
       summary: Lista de propostas do candidato
@@ -478,10 +866,26 @@ components:
           type: string
         nivel:
           type: string
+    ExperienciaProf:
+      required:
+        - empresa
+        - prazo
+        - cargo
+      properties:
+        empresa:
+          type: string
+        prazo:
+          type: string
+        cargo:
+          type: string
     QualificacoesTecnicas:
       type: array
       items:
         $ref: '#/components/schemas/QualificacaoTecnica'
+    ExperienciaProfissional:
+      type: array
+      items:
+        $ref: '#/components/schemas/ExperienciaProf'
     Mensagem:
       required:
         - id
