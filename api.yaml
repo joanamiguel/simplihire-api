@@ -5,28 +5,36 @@ info:
   license:
     name: MIT
 tags:
-  - name: Recrutador
-    description: Operações relativos aos recrutadores
-  - name: Avalidador Técnico
-    description: Operações relativos aos avaliadores técnicos
+  - name: Propostas
+    description: Endpoints de Proposta
+  - name: Registo de Candidato
   - name: Candidatos
     description: Operações relativos aos candidatos
-  - name: Empresa
-    description: Operações relativos à empresa empregadora
+  - name: Candidatura
+    description: Operações relativos à candidatura
+  - name: Autenticação
+    description: Operações relativos ao processo de autentificação
+  - name: Eventos
+    description: Endpoints de Eventos
+  - name: Exames Técnicos
+    description: Endpoints de Exames Técnicos
+  - name: UI
+    description: Endpoints relativos à interface gráfica
+  - name: Mensagens
+    description: Endpoints relativos às mensagens
 servers:
   - url: http://localhost:3000
     description: Local machine
 paths:
   #Empresa Recrutadora (Funcionalidades comuns)
-  /auth/loginEmpregado:
+  /auth/login:
     post:
       summary: Início de sessão
       description: >-
-        Ao chamar este endpoint o utilizador de uma empresa empregadora é
-        autentificado
-      operationId: loginEmpresa
+        Tanto o empregado como o candidato se podem autentificar através deste endpoint
+      operationId: login
       tags:
-        - Empresa
+        - Autenticação
       requestBody:
         content:
           application/x-www-form-urlencoded:
@@ -39,6 +47,9 @@ paths:
                 password:    
                   type: string
                   description: "Password do utilizador"
+                userType:    
+                  type: string
+                  description: "Tipo de utilizador -> Empresa ou Candidato"                  
             encoding:
               color:            # color=red,green,blue
                 style: form
@@ -52,23 +63,22 @@ paths:
                 $ref: '#/components/schemas/LoginAnswer'
         '401':
           description: Password Errada / Utilizador não existente
-  /auth/logoutEmpregado:
+  /auth/logout:
     get:
       summary: Terminar sessão
       description: >-
-        Ao chamar este endpoint é terminada a sessão de um utilizador de uma
-        empresa empregadora
+        Ao chamar este endpoint é terminada a sessão de um utilizador, quer sendo candidato ou empregador
       security:
         - jwtAuth: []
-      operationId: logoutEmpresa
+      operationId: logout
       tags:
-        - Empresa
+        - Autenticação
       responses:
         '200':
           description: Utilizador com sessão terminada
   /auth/registoEmpregado:
     post:
-      summary: Criar conta de utilizador
+      summary: Criar conta de utilizador empregador
       requestBody:
         content:
           application/x-www-form-urlencoded:
@@ -99,7 +109,7 @@ paths:
         empresa empregadora
       operationId: registoEmpresa
       tags:
-        - Empresa
+        - Autenticação
       responses:
         '200':
           description: Conta criada com sucesso
@@ -109,13 +119,14 @@ paths:
           description: Erro no lado do servidor
         '409':
           description: Utilizador já existente          
+  #Propostas
   '/propostas/{idProposta}/':
     get:
       summary: Informação de uma proposta
       description: Ao chamar este endpoint devolve informação de uma proposta de emprego
       operationId: getPropostaByID
       tags:
-        - Empresa
+        - Propostas
       parameters:
         - name: idProposta
           in: path
@@ -131,8 +142,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Proposta'
-  #Recrutador
+                $ref: '#/components/schemas/Proposta'  
   /propostas/propostasAdicionadas:
     get:
       summary: Propostas Adicionadas
@@ -143,7 +153,7 @@ paths:
       security:
         - jwtAuth: []
       tags:
-        - Recrutador
+        - Propostas
       responses:
         '200':
           description: As propostas adicionadas
@@ -161,7 +171,7 @@ paths:
       security:
         - jwtAuth: []
       tags:
-        - Recrutador
+        - Propostas
       responses:
         '200':
           description: As propostas publicadas
@@ -175,7 +185,7 @@ paths:
       description: Ao chamar este endpoint uma proposta adicionada é públicada no sistema
       operationId: publishPropostaByID
       tags:
-        - Recrutador
+        - Propostas
       parameters:
         - name: idProposta
           in: path
@@ -204,7 +214,7 @@ paths:
       description: Ao chamar este endpoint uma proposta adicionada é encerrada no sistema
       operationId: closePropostaByID
       tags:
-        - Recrutador
+        - Propostas
       security:
         - jwtAuth: []
       parameters:
@@ -228,7 +238,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  #Avaliador Técnico
   #Candidato
   '/candidatos/{idCandidato}/':
     get:
@@ -272,37 +281,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Propostas'
-  /auth/loginCandidatos:
-    post:
-      summary: Início de sessão do lado do candidato
-      operationId: loginCandidatos
-      tags:
-        - Candidatos
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                email:          
-                  type: string
-                  description: "Email do candidato"
-                password:    
-                  type: string
-                  description: "Password do candidato"
-            encoding:
-              color:            # color=red,green,blue
-                style: form
-                explode: false            
-      responses:
-        '200':
-          description: Mensagem a identificar sucesso
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LoginAnswer'
-        '401':
-          description: Password Errada / Utilizador não existente
+
   
 components:
   securitySchemes:
@@ -369,12 +348,13 @@ components:
           type: string
     LoginAnswer:
       required:
-        - loggedIn
+        - token
         - userType
       properties:
-        loggedIn:
-          type: boolean
-        JWT:
+        userType:
+          type: string
+          description: Type of User
+        token:
           type: string
           description: JSON Web Token
     Status:
