@@ -282,7 +282,239 @@ paths:
               schema:
                 $ref: '#/components/schemas/Propostas'
 
+  #Eventos
+  '/eventos/{idEvento}/avaliadorTecnico': 
+    put:
+      summary: Adicionar avaliador tecnico numa entrevista
+      description: Ao chamar este endpoint uma um avaliador tecnico é adicionado a uma entrevista
+      operationId: putAvaliadorTecnicoEntrevistaId
+      tags:
+        - Eventos
+      parameters:
+        - name: idEvento
+          in: path
+          required: true
+          description: O id do evento(entrevista) a qual se quer adicionar o avaliador tecnico
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Avaliador tecnico adicionado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Erro a adicionar avaliador tecnico
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
   
+  #ExamesTecnicos
+  '/exameTecnico/{idCandidato}/':
+    get:
+      summary: Exame tecnico de um candidato
+      description: Ao chamar este endpoint devolve exame tecnico do candidato
+      operationId: getExameTecnicoCandidatoId
+      tags:
+        - ExameTecnico
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato a quem o exame tecnico pertence
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Retorna exame tecnico do candidato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exame_Tecnico' 
+  
+  '/exameTecnico/':
+    get:
+      summary: Lista de exames tecnicos
+      description: Ao chamar este endpoint devolve lista de exames tecnicos
+      operationId: getExamesTecnicos
+      tags:
+        - ExameTecnico
+      responses:
+        '200':
+          description: Retorna lista de exames tecnicos 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exame_Tecnico' 
+                
+  '/exameTecnico/avaliadorTecnico/':
+    get:
+      summary: Lista de avaliadores tecnicos
+      description: Ao chamar este endpoint devolve lista de avaliadores tecnicos
+      operationId: getAvaliadoresTecnicos
+      tags:
+        - ExameTecnico
+      responses:
+        '200':
+          description: Retorna lista de avaliadores tecnicos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exame_Tecnico'              
+
+  '/exameTecnico/classificacao/{idCandidato}/':  
+    put:
+      summary: Classifica um candidato
+      description: Ao chamar este endpoint é atribuida uma nota ao candidato
+      operationId: putClassificacaoCandidatoId
+      tags:
+        - ExameTecnico
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato a que vai ser atribuida uma classificacao
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Classificacao atribuida com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Erro a atribuir classificacao
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'  
+                
+  '/exameTecnico/propostas/{idProposta}': 
+    put:
+      summary: Adiciona perguntas ao exame tecnico de uma proposta
+      description: Ao chamar este endpoint são adicionadas perguntas ao exame tecnico
+      operationId: putPerguntasPropostaId
+      tags:
+        - ExameTecnico
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta a que vai vao ser adicionadas perguntas a entrevista tecnica
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Perguntas adicionadas com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Erro a adicionar perguntas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'  
+                
+  
+  #UI
+  '/UI/':
+    get:
+      summary: Resumo da actividade
+      description: Ao chamar este endpoint devolve o resumo da actividade(relatorio business intelligence)
+      operationId: getResumoActividade
+      tags:
+        - UI
+      responses:
+        '200':
+          description: Retorna resumo da actividade
+      #falta aqui o schema nao existe o modelo UI
+
+  
+  
+  #Mensagens
+  '/mensagens/':
+    get:
+      summary: Mensagens recebidas do gestor de proposta
+      description: Ao chamar este endpoint devolve as mensagens recebidas do gestor de proposta
+      operationId: getMensagens
+      tags:
+        - Mensagens
+      
+      responses:
+        '200':
+          description: Retorna mensagens recebidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensagens' 
+  
+  '/mensagens/propostas/{idProposta}': 
+    put:
+      summary: Envia mensagem ao gestor da proposta
+      description: Ao chamar este endpoint é enviada mensagem ao gestor da proposta
+      operationId: putMensagemPropostaId
+      tags:
+        - Mensagens
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta do gestor de propostas a quem vai ser enviada a mensagem
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Mensagem enviada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Erro ao enviar mensagem
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'            
+    
+    
+  '/mensagens/recebida/candidato/{idCandidato}':
+    get:
+      summary: Mensagens recebidas do gestor de proposta do candidato
+      description: Ao chamar este endpoint devolve as mensagens que o gestor de projecto recebeu do candidato
+      operationId: getMensagensGestorCandidato
+      tags:
+        - Mensagens
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato de quem se quer ver as mensagens
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Retorna mensagens recebidas do candidato ou avaliador tecnico
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensagens' 
+    
+                
 components:
   securitySchemes:
     jwtAuth:            # arbitrary name for the security scheme
@@ -346,6 +578,10 @@ components:
           type: string
         universidade:
           type: string
+    Mensagens:
+      type: array
+      items:
+        $ref: '#/components/schemas/Mensagem'
     LoginAnswer:
       required:
         - token
@@ -368,7 +604,7 @@ components:
         error:
           type: string
           description: Descrição de erro
-    Exame_Técnico:
+    Exame_Tecnico:
       required:
         - id
         - nome
@@ -384,6 +620,8 @@ components:
           type: string
         universidade:
           type: string
+      
+    
     Pergunta_Técnica:
       required:
         - id
