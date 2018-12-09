@@ -477,7 +477,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/propostas/{idProposta}/putFaseProposta/{fase}':
+  '/propostas/{idProposta}/putFaseProposta/{titulo}/{ordem}/{tipo}':
     put:
       summary: Adiciona fase a proposta de emprego
       description: Ao chamar este endpoint será adicionada uma fase a uma determinada proposta de emprego
@@ -491,10 +491,22 @@ paths:
           description: O id da proposta
           schema:
             type: string
-        - name: fase
+        - name: titulo
           in: path
           required: true
-          description: A fase que se quer adicionar à proposta
+          description: Título da fase
+          schema:
+            type: string
+        - name: ordem
+          in: path
+          required: true
+          description: Ordem da fase
+          schema:
+            type: string
+        - name: tipo
+          in: path
+          required: true
+          description: Tipo da fase
           schema:
             type: string
       security:
