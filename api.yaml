@@ -710,7 +710,7 @@ paths:
           description: Utilizador já existente
         '500':
           description: Erro no lado do servidor
-  '/propostas/{idProposta}/':
+  '/propostas/getProposta/{idProposta}/':
     get:
       summary: Informação de uma proposta
       description: Ao chamar este endpoint devolve informação de uma proposta de emprego
