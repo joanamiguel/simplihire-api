@@ -477,7 +477,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/propostas/{idProposta}/putFaseProposta/{titulo}/{ordem}/{tipo}':
+  '/propostas/{idProposta}/putFaseProposta/{fase}':
     put:
       summary: Adiciona fase a proposta de emprego
       description: Ao chamar este endpoint será adicionada uma fase a uma determinada proposta de emprego
@@ -491,22 +491,10 @@ paths:
           description: O id da proposta
           schema:
             type: string
-        - name: titulo
+        - name: fase
           in: path
           required: true
-          description: Título da fase
-          schema:
-            type: string
-        - name: ordem
-          in: path
-          required: true
-          description: Ordem da fase
-          schema:
-            type: string
-        - name: tipo
-          in: path
-          required: true
-          description: Tipo da fase
+          description: A fase que se quer adicionar à proposta
           schema:
             type: string
       security:
@@ -524,7 +512,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/propostas/{idProposta}/associarAvaliadorTecnico':
+  '/propostas/{idProposta}/associarAvaliadorTecnico/{idAvaliador}/{watcher}/{gestorProposta}/{avaliadorTecnico}/{gestorEquipa}':
     put:
       summary: Associar avaliador técnico a uma proposta de emprego
       description: Ao chamar este endpoint um avaliador técnico será associado a uma proposta de emprego
@@ -542,6 +530,30 @@ paths:
           in: path
           required: true
           description: O id do avaliador a ser associado à proposta
+          schema:
+            type: string
+        - name: watcher
+          in: path
+          required: true
+          description: watcher a ser associado à proposta
+          schema:
+            type: string
+        - name: gestorProposta
+          in: path
+          required: true
+          description: gestor da proposta a ser associado à proposta
+          schema:
+            type: string
+        - name: avaliadorTecnico
+          in: path
+          required: true
+          description: avaliador técnico a ser associado à proposta
+          schema:
+            type: string
+        - name: gestorEquipa
+          in: path
+          required: true
+          description: gestor equipa a ser associado à proposta
           schema:
             type: string
       security:
