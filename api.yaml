@@ -85,8 +85,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Candidatura'
-         
+                $ref: '#/components/schemas/Candidatura'       
   '/candidatura/{idCandidato}/{idProposta}/anotacaoes':
     put:
       summary: Adiciona anotacoes a uma candidatura
@@ -107,19 +106,90 @@ paths:
           description: O id da proposta
           schema:
             type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                tipo:
+                  type: integer
+                  description: Tipo de Anotação (int, ver tabela)
+                descricao:
+                  type: string
+                  description: Descrição da Anotação
+                fase:
+                  type: integer
+                  description: Fase da Proposta (ver fases de uma proposta!)
+            encoding:
+              color:
+                style: form
+                explode: false
+
       responses:
         '200':
           description: Anotações adicionadas com sucesso à candidatura
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Candidatura'
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Parâmetros em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Erro a Interir
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
         '403':
           description: Utilizador sem permissões
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                 
+                $ref: '#/components/schemas/Status'
+  '/candidatura/{idCandidato}/{idProposta}/anotacaoes ':
+    get:
+      summary: Obter anotações de uma candidatura
+      description: A invocação deste endpoint devolde as anotações de uma candidatura. Apenas Gestores Técnicos da Proposta podem aceder ao Endpoint.
+      operationId: gerAnotacoesDumaCandidatura
+      tags:
+        - Candidatura
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato
+          schema:
+            type: string
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Anotações da Candidatura
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Anotacoes'
+        '500':
+          description: Erro a obter informação da BD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'               
   '/candidatura/{idCandidato}/{idProposta}/submissao':
     put:
       summary: Submissão de uma candidatura a uma proposta de emprego
@@ -1158,4 +1228,53 @@ components:
         email:
           type: string
         universidade:
+          type: string
+    Anotacao:
+      type: object
+      required:
+        - idAnotacao
+        - candidato
+        - proposta
+        - tipo
+        - descricao
+        - dataCriacao
+        - lastUpdate
+        - fase
+        - Empregado_Autor
+        - Tipo_Anotacao
+      properties:
+        idAnotacao:
+          type: integer
+          format: int64
+        candidato:
+          type: string
+        proposta:
+          type: integer
+        descricao:
+          type: string
+        dataCriacao:
+          type: string
+        lastUpdate:
+          type: string
+        fase:
+          type: integer
+        Empregado_Autor:
+          type: integer 
+        Tipo_Anotacao:
+          type: object
+          $ref: '#/components/schemas/Tipo_Anotacao'
+    Anotacoes:
+      type: array
+      items:
+        $ref: '#/components/schemas/Anotacao'
+    Tipo_Anotacao:
+      type: object
+      required:
+        - idTipo
+        - designacao
+      properties:
+        idAnotacao:
+          type: integer
+          format: int64
+        designacao:
           type: string
