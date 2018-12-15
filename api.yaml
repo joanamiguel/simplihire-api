@@ -26,11 +26,11 @@ servers:
   - url: 'http://localhost:3000'
     description: Local machine
 paths:
-  '/candidatos/{idCandidato}/proposta/{idProposta}/estadoCandidatura':
+  '/candidatura/{idCandidato}/{idProposta}/informacoes':
     get:
       summary: Informação de uma candidatura
       description: A invocação deste endpoint retorna a informação/estado de uma candidatura
-      operationId: getCandidatura
+      operationId: getInfoCandidatura
       tags:
         - Candidatura
       parameters:
@@ -53,11 +53,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Candidatura'
-  '/candidatos/{idCandidato}/proposta/{idProposta}/SituacaoCandidatura':
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                
+  '/candidatura/{idCandidato}/{idProposta}/estadoCandidatura':
     get:
-      summary: Situacao de uma candidatura
-      description: A invocação deste endpoint retorna a situacao de uma candidatura
-      operationId: getSituacao
+      summary: Estado de uma candidatura
+      description: A invocação deste endpoint retorna o estado de uma candidatura
+      operationId: getEstadoCandidatura
       tags:
         - Candidatura
       parameters:
@@ -80,7 +86,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Candidatura'
-  '/candidatos/{idCandidato}/proposta{idProposta}/putAnotacoes/{tecnicas}/{salario}/{rh}/{gestao}/{avaliacao}':
+         
+  '/candidatura/{idCandidato}/{idProposta}/anotacaoes':
     put:
       summary: Adiciona anotacoes a uma candidatura
       description: A invocação deste endpoint envolve a atribuição de anotações a uma candidatura
@@ -100,36 +107,6 @@ paths:
           description: O id da proposta
           schema:
             type: string
-        - name: tecnicas
-          in: path
-          required: true
-          description: Tecnicas
-          schema:
-            type: string
-        - name: salario
-          in: path
-          required: true
-          description: Salário
-          schema:
-            type: integer
-        - name: rh
-          in: path
-          required: true
-          description: Recursos Humanos
-          schema:
-            type: string
-        - name: gestao
-          in: path
-          required: true
-          description: Gestão
-          schema:
-            type: string
-        - name: avaliacao
-          in: path
-          required: true
-          description: Avaliação da candidatura
-          schema:
-            type: string
       responses:
         '200':
           description: Anotações adicionadas com sucesso à candidatura
@@ -137,52 +114,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Candidatura'
-  '/candidatos/{idCandidato}/proposta{idProposta}/putAnotacoes/{tecnicas}/{avaliacao}/{entrevista}':
-    put:
-      summary: Adiciona anotacoes a uma candidatura
-      description: A invocação deste endpoint envolve a atribuição de anotações a uma candidatura
-      operationId: putAnotacoesNumaCandidatura
-      tags:
-        - Candidatura
-      parameters:
-        - name: idCandidato
-          in: path
-          required: true
-          description: O id do candidato
-          schema:
-            type: string
-        - name: idProposta
-          in: path
-          required: true
-          description: O id da proposta
-          schema:
-            type: string
-        - name: tecnicas
-          in: path
-          required: true
-          description: Tecnicas
-          schema:
-            type: string
-        - name: entrevista
-          in: path
-          required: true
-          description: Tecnicas
-          schema:
-            type: string 
-        - name: avaliacao
-          in: path
-          required: true
-          description: Avaliação da candidatura
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Anotações adicionadas com sucesso à candidatura
+        '403':
+          description: Utilizador sem permissões
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Candidatura'
-  '/candidatos/{idCandidato}/proposta/{idProposta}/submeterCandidatura':
+                $ref: '#/components/schemas/Status'                 
+  '/candidatura/{idCandidato}/{idProposta}/submissao':
     put:
       summary: Submissão de uma candidatura a uma proposta de emprego
       description: A invocação deste endpoint envolve a submissão de uma candidatura a uma proposta de emprego publicada
@@ -209,6 +147,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Candidatura'
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                  
   '/candidatos/{idCandidato}/caixamensagens/{idGestorProposta}/mensagens':
     get:
       summary: Mensagens recebidas do gestor da proposta pelo candidato a uma proposta de emprego
