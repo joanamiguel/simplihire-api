@@ -16,7 +16,7 @@ tags:
     description: Operações relativos ao processo de autentificação
   - name: Eventos
     description: Endpoints de Eventos
-  - name: Exames Técnicos
+  - name: Exame Técnico
     description: Endpoints de Exames Técnicos
   - name: UI
     description: Endpoints relativos à interface gráfica
@@ -874,7 +874,7 @@ paths:
       description: Ao chamar este endpoint devolve exame tecnico do candidato
       operationId: getExameTecnicoCandidatoId
       tags:
-        - ExameTecnico
+        - Exame Técnico
       parameters:
         - name: idCandidato
           in: path
@@ -895,7 +895,7 @@ paths:
       description: Ao chamar este endpoint devolve lista de exames tecnicos
       operationId: getExamesTecnicos
       tags:
-        - ExameTecnico
+        - Exame Técnico
       responses:
         '200':
           description: Retorna lista de exames tecnicos
@@ -909,7 +909,7 @@ paths:
       description: Ao chamar este endpoint devolve lista de avaliadores tecnicos
       operationId: getAvaliadoresTecnicos
       tags:
-        - ExameTecnico
+        - Exame Técnico
       responses:
         '200':
           description: Retorna lista de avaliadores tecnicos
@@ -923,7 +923,7 @@ paths:
       description: Ao chamar este endpoint é atribuida uma nota ao candidato
       operationId: putClassificacaoCandidatoId
       tags:
-        - ExameTecnico
+        - Exame Técnico
       parameters:
         - name: idCandidato
           in: path
@@ -952,7 +952,7 @@ paths:
       description: Ao chamar este endpoint são adicionadas perguntas ao exame tecnico
       operationId: putPerguntasPropostaId
       tags:
-        - ExameTecnico
+        - Exame Técnico
       parameters:
         - name: idProposta
           in: path
