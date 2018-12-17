@@ -26,6 +26,157 @@ servers:
   - url: 'http://localhost:3000'
     description: Local machine
 paths:
+  '/candidatura/{idCandidato}/{idProposta}/documentos ':
+    get:
+      summary: Obter informações dos documentos de uma candidatura
+      operationId: getDocumentos
+      tags:
+        - Candidatura
+      security:
+        - jwtAuth: []        
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato
+          schema:
+            type: string
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: integer       
+      responses:
+        '200':
+          description: Documentos obtido com sucesso!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Documentos' 
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'   
+        '500':
+          description: Erro a obter informação da BD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status' 
+        '400':
+          description: Erro a obter documento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                                                      
+  '/candidatura/{idCandidato}/{idProposta}/documentos/{idDocumento}':
+    get:
+      summary: Obter um documento de uma candidatura
+      operationId: getDocumento
+      tags:
+        - Candidatura
+      security:
+        - jwtAuth: []        
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato
+          schema:
+            type: string
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: integer
+        - name: idDocumento
+          in: path
+          required: true
+          description: O id do documento
+          schema:
+            type: integer         
+      responses:
+        '200':
+          description: Documento obtido com sucesso!
+          content:       # Response body
+            image/*:     # Media type
+             schema: 
+               type: string
+               format: binary 
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'   
+        '500':
+          description: Erro a obter informação da BD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status' 
+        '400':
+          description: Erro a obter documento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                                                      
+  '/candidatura/{idCandidato}/{idProposta}/documentos':
+    put:
+      summary: Submissão de um documento a uma candidatura
+      description: A invocação deste endpoint envolve a submissão de um documento a uma candidatura
+      operationId: putCandidatura
+      tags:
+        - Candidatura
+      security:
+        - jwtAuth: []        
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                tipoDocumento:
+                  type: integer
+                documento:
+                  type: string
+                  format: binary
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato
+          schema:
+            type: string
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Documento submetido com sucesso!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentoStatus'
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'   
+        '500':
+          description: Erro a inserir
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                                   
   '/candidatura/{idCandidato}/{idProposta}/informacoes':
     get:
       summary: Informação de uma candidatura
@@ -33,6 +184,8 @@ paths:
       operationId: getInfoCandidatura
       tags:
         - Candidatura
+      security:
+        - jwtAuth: []        
       parameters:
         - name: idCandidato
           in: path
@@ -66,6 +219,8 @@ paths:
       operationId: getEstadoCandidatura
       tags:
         - Candidatura
+      security:
+        - jwtAuth: []        
       parameters:
         - name: idCandidato
           in: path
@@ -93,6 +248,8 @@ paths:
       operationId: putAnotacoesNumaCandidatura
       tags:
         - Candidatura
+      security:
+        - jwtAuth: []        
       parameters:
         - name: idCandidato
           in: path
@@ -158,6 +315,8 @@ paths:
       operationId: gerAnotacoesDumaCandidatura
       tags:
         - Candidatura
+      security:
+        - jwtAuth: []        
       parameters:
         - name: idCandidato
           in: path
@@ -197,6 +356,8 @@ paths:
       operationId: submitCandidatura
       tags:
         - Candidatura
+      security:
+        - jwtAuth: []        
       parameters:
         - name: idCandidato
           in: path
@@ -292,6 +453,8 @@ paths:
       operationId: getQualificacoesCandidato
       tags:
         - Candidatos
+      security:
+        - jwtAuth: []        
       parameters:
         - name: idCandidato
           in: path
@@ -313,6 +476,8 @@ paths:
       operationId: getExperienciaProfissional
       tags:
         - Candidatos
+      security:
+        - jwtAuth: []        
       parameters:
         - name: idCandidato
           in: path
@@ -334,6 +499,8 @@ paths:
       operationId: putQualificacoesCandidato
       tags:
         - Candidatos
+      security:
+        - jwtAuth: []        
       parameters:
         - name: idCandidato
           in: path
@@ -355,6 +522,8 @@ paths:
       operationId: putExperiencia
       tags:
         - Candidatos
+      security:
+        - jwtAuth: []        
       parameters:
         - name: idCandidato
           in: path
@@ -376,6 +545,8 @@ paths:
       operationId: putEstadoEmCandidatura
       tags:
         - Candidatos
+      security:
+        - jwtAuth: []        
       parameters:
         - name: idCandidato
           in: path
@@ -409,6 +580,8 @@ paths:
       operationId: putSituacaoEmCandidatura
       tags:
         - Candidatos
+      security:
+        - jwtAuth: []        
       parameters:
         - name: idCandidato
           in: path
@@ -442,6 +615,8 @@ paths:
       operationId: getPropostasCandidato
       tags:
         - Candidatos
+      security:
+        - jwtAuth: []        
       parameters:
         - name: idCandidato
           in: path
@@ -839,6 +1014,8 @@ paths:
       operationId: getCandidatoById
       tags:
         - Candidatos
+      security:
+        - jwtAuth: []        
       parameters:
         - name: idCandidato
           in: path
@@ -860,6 +1037,7 @@ paths:
       operationId: putAvaliadorTecnicoEntrevistaId
       tags:
         - Eventos
+        
       parameters:
         - name: idEvento
           in: path
@@ -887,6 +1065,8 @@ paths:
       summary: Exame tecnico de um candidato
       description: Ao chamar este endpoint devolve exame tecnico do candidato
       operationId: getExameTecnicoCandidatoId
+      security:
+        - jwtAuth: []      
       tags:
         - Exame Técnico
       parameters:
@@ -908,6 +1088,8 @@ paths:
       summary: Lista de exames tecnicos
       description: Ao chamar este endpoint devolve lista de exames tecnicos
       operationId: getExamesTecnicos
+      security:
+        - jwtAuth: []      
       tags:
         - Exame Técnico
       responses:
@@ -924,6 +1106,8 @@ paths:
       operationId: getAvaliadoresTecnicos
       tags:
         - Exame Técnico
+      security:
+        - jwtAuth: []        
       responses:
         '200':
           description: Retorna lista de avaliadores tecnicos
@@ -938,6 +1122,7 @@ paths:
       operationId: putClassificacaoCandidatoId
       tags:
         - Exame Técnico
+        
       parameters:
         - name: idCandidato
           in: path
@@ -965,6 +1150,7 @@ paths:
       summary: Adiciona perguntas ao exame tecnico de uma proposta
       description: Ao chamar este endpoint são adicionadas perguntas ao exame tecnico
       operationId: putPerguntasPropostaId
+      
       tags:
         - Exame Técnico
       parameters:
@@ -1004,6 +1190,8 @@ paths:
       summary: Mensagens recebidas do gestor de proposta
       description: Ao chamar este endpoint devolve as mensagens recebidas do gestor de proposta
       operationId: getMensagens
+      security:
+        - jwtAuth: []      
       tags:
         - Mensagens
       responses:
@@ -1191,12 +1379,14 @@ components:
       required:
         - status
       properties:
-        ok:
-          type: boolean
-          description: 'True se teve sucesso, False se houver erro'
+        status:
+          type: string
         error:
           type: string
-          description: Descrição de erro
+          description: Descrição de erro simples
+        devError:
+          type: string
+          description: Erro com mais informação         
     Exame_Tecnico:
       required:
         - id
@@ -1278,3 +1468,39 @@ components:
           format: int64
         designacao:
           type: string
+    DocumentoStatus:
+      type: object
+      required:
+        - status
+        - idDocumento
+      properties:
+        status:
+          type: string
+        idDocumento:
+          type: integer
+          format: int64
+    Documentos:
+      type: array
+      items:
+        $ref: '#/components/schemas/Documento'
+    Documento:
+      type: object
+      required:
+        - idDocumentos
+      properties:
+        idDocumentos:
+          type: integer
+          format: int64
+        Tipo_Documento:
+          $ref: '#/components/schemas/Tipo_Documento'        
+    Tipo_Documento:
+      type: object
+      required:
+        - idtipoDocumento
+        - designacao
+      properties:
+        idtipoDocumento:
+          type: integer
+          format: int64
+        designacao:
+          type: string          
