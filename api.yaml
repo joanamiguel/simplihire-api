@@ -241,7 +241,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Candidatura'       
-  '/candidatura/{idCandidato}/{idProposta}/anotacaoes':
+  '/candidatura/{idCandidato}/{idProposta}/anotacaoes/':
     put:
       summary: Adiciona anotacoes a uma candidatura
       description: A invocação deste endpoint envolve a atribuição de anotações a uma candidatura
@@ -308,7 +308,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/candidatura/{idCandidato}/{idProposta}/anotacaoes ':
+  '/candidatura/{idCandidato}/{idProposta}/anotacaoes':
     get:
       summary: Obter anotações de uma candidatura
       description: A invocação deste endpoint devolde as anotações de uma candidatura. Apenas Gestores Técnicos da Proposta podem aceder ao Endpoint.
@@ -318,6 +318,18 @@ paths:
       security:
         - jwtAuth: []        
       parameters:
+        - name: tipo_anotacao
+          in: query
+          required: false
+          description: O id do tipo de anotação
+          schema:
+            type: string
+        - name: fase
+          in: query
+          required: false
+          description: O id da fase onde a anotação foi introduzida
+          schema:
+            type: string              
         - name: idCandidato
           in: path
           required: true
@@ -701,65 +713,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/propostas/{idProposta}/associarAvaliadorTecnico/{idAvaliador}/{watcher}/{gestorProposta}/{avaliadorTecnico}/{gestorEquipa}':
-    put:
-      summary: Associar avaliador técnico a uma proposta de emprego
-      description: Ao chamar este endpoint um avaliador técnico será associado a uma proposta de emprego
-      operationId: associaAvaliadorAPropostaPorIds
-      tags:
-        - Propostas
-      parameters:
-        - name: idProposta
-          in: path
-          required: true
-          description: O id da proposta
-          schema:
-            type: string
-        - name: idAvaliador
-          in: path
-          required: true
-          description: O id do avaliador a ser associado à proposta
-          schema:
-            type: string
-        - name: watcher
-          in: path
-          required: true
-          description: watcher a ser associado à proposta
-          schema:
-            type: string
-        - name: gestorProposta
-          in: path
-          required: true
-          description: gestor da proposta a ser associado à proposta
-          schema:
-            type: string
-        - name: avaliadorTecnico
-          in: path
-          required: true
-          description: avaliador técnico a ser associado à proposta
-          schema:
-            type: string
-        - name: gestorEquipa
-          in: path
-          required: true
-          description: gestor equipa a ser associado à proposta
-          schema:
-            type: string
-      security:
-        - jwtAuth: []
-      responses:
-        '200':
-          description: Avaliador associado com sucesso à proposta
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-        '400':
-          description: Erro a associador o avaliador à proposta
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
+
   '/propostas/{idProposta}/encerrar':
     put:
       summary: Encerramento de uma proposta
@@ -1253,7 +1207,70 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Mensagens'
-                
+  '/propostas/{idProposta}/associarEmpregado':
+    put:
+      summary: Associar empregado a uma proposta de emprego
+      description: Ao chamar este endpoint a tabela de permissões será alterada, inserindo ou atualizado
+      operationId: associaAvaliadorAPropostaPorIds
+      tags:
+        - Propostas
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                idEmpregado:
+                  type: string
+                  description: ID do empregado em associar permissões
+                watcher:
+                  type: integer
+                  description: Se utilizador vai ser watcher
+                  format: int1                  
+                gestorProposta:
+                  type: integer
+                  description: Se utilizador vai ser gestor de proposta
+                  format: int1               
+                avaliadorTecnico:
+                  type: integer
+                  description: Se utilizador vai ser avaliador técnico  
+                  format: int1                    
+                gestorEquipa:
+                  type: integer
+                  description: Se utilizador vai ser gestor de equipa     
+                  format: int1                                                       
+            encoding:
+              color:
+                style: form
+                explode: false        
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Empregado associado com sucesso à proposta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Erro a associador o empregado à proposta (erro do cliente)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Erro a associador o empregado à proposta (erro do servidor)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                                
 components:
   securitySchemes:
     jwtAuth:
