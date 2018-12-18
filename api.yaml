@@ -26,6 +26,7 @@ servers:
   - url: 'http://localhost:3000'
     description: Local machine
 paths:
+
   '/candidatura/{idCandidato}/{idProposta}/documentos ':
     get:
       summary: Obter informações dos documentos de uma candidatura
@@ -1271,6 +1272,71 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'                                
+  '/eventos/tiposEventos':
+    get:
+      summary: Obter tipos de eventos
+      operationId: getTiposEventos
+      security:
+        - jwtAuth: []
+      tags:
+        - Eventos
+      responses:
+        '200':
+          description: Os tipos de Eventos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tipo_Evento'
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'             
+  '/candidatura/tiposAnotacoes':
+    get:
+      summary: Obter tipos de anotações
+      operationId: getTiposAnotacoes
+      security:
+        - jwtAuth: []
+      tags:
+        - Candidatura
+      responses:
+        '200':
+          description: Os tipos de anotações
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tipo_Anotacao'
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/candidatura/tiposDocumentos':
+    get:
+      summary: Obter tipos de documentos
+      operationId: getTiposDocumentos
+      security:
+        - jwtAuth: []
+      tags:
+        - Candidatura
+      responses:
+        '200':
+          description: Os tipos de Eventos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tipo_Documento'
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                      
 components:
   securitySchemes:
     jwtAuth:
@@ -1521,3 +1587,14 @@ components:
           format: int64
         designacao:
           type: string          
+    Tipo_Evento:
+      type: object
+      required:
+        - idtipoEvento
+        - designacao
+      properties:
+        idtipoDocumento:
+          type: integer
+          format: int64
+        designacao:
+          type: string                    
