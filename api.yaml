@@ -27,7 +27,7 @@ servers:
     description: Local machine
 paths:
 
-  '/candidatura/{idCandidato}/{idProposta}/documentos ':
+  '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/documentos ':
     get:
       summary: Obter informações dos documentos de uma candidatura
       operationId: getDocumentos
@@ -73,7 +73,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'                                                      
-  '/candidatura/{idCandidato}/{idProposta}/documentos/{idDocumento}':
+  '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/documentos/{idDocumento}':
     get:
       summary: Obter um documento de uma candidatura
       operationId: getDocumento
@@ -126,7 +126,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'                                                      
-  '/candidatura/{idCandidato}/{idProposta}/documentos':
+  '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/documentos':
     put:
       summary: Submissão de um documento a uma candidatura
       description: A invocação deste endpoint envolve a submissão de um documento a uma candidatura
@@ -178,7 +178,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'                                   
-  '/candidatura/{idCandidato}/{idProposta}/informacoes':
+  '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/informacoes':
     get:
       summary: Informação de uma candidatura
       description: A invocação deste endpoint retorna a informação/estado de uma candidatura
@@ -213,7 +213,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'                
-  '/candidatura/{idCandidato}/{idProposta}/estadoCandidatura':
+  '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/estadoCandidatura':
     get:
       summary: Estado de uma candidatura
       description: A invocação deste endpoint retorna o estado de uma candidatura
@@ -242,7 +242,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Candidatura'       
-  '/candidatura/{idCandidato}/{idProposta}/anotacaoes/':
+  '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/anotacaoes/':
     put:
       summary: Adiciona anotacoes a uma candidatura
       description: A invocação deste endpoint envolve a atribuição de anotações a uma candidatura
@@ -309,7 +309,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/candidatura/{idCandidato}/{idProposta}/anotacaoes':
+  '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/anotacaoes':
     get:
       summary: Obter anotações de uma candidatura
       description: A invocação deste endpoint devolde as anotações de uma candidatura. Apenas Gestores Técnicos da Proposta podem aceder ao Endpoint.
@@ -362,7 +362,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'               
-  '/candidatura/{idCandidato}/{idProposta}/submissao':
+  '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/submissao':
     put:
       summary: Submissão de uma candidatura a uma proposta de emprego
       description: A invocação deste endpoint envolve a submissão de uma candidatura a uma proposta de emprego publicada
