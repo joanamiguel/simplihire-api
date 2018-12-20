@@ -5,15 +5,14 @@ info:
   license:
     name: MIT
 tags:
+  - name: Autenticação
+    description: Operações relativos ao processo de autentificação
   - name: Propostas
     description: Endpoints de Proposta
-  - name: Registo de Candidato
   - name: Candidatos
     description: Operações relativos aos candidatos
   - name: Candidatura
     description: Operações relativos à candidatura
-  - name: Autenticação
-    description: Operações relativos ao processo de autentificação
   - name: Eventos
     description: Endpoints de Eventos
   - name: Exame Técnico
@@ -120,8 +119,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status' 
-        '400':
-          description: Erro a obter documento
+        '404':
+          description: Documento não Existente
           content:
             application/json:
               schema:
@@ -213,6 +212,59 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'                
+  '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/documentos/{idDocumento} ':
+    delete:
+      summary: Apagar um documento de uma candidatura
+      operationId: getDocumento
+      tags:
+        - Candidatura
+      security:
+        - jwtAuth: []        
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato
+          schema:
+            type: string
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: integer
+        - name: idDocumento
+          in: path
+          required: true
+          description: O id do documento
+          schema:
+            type: integer         
+      responses:
+        '200':
+          description: Documento apagado com sucesso!
+          content:       # Response body
+            image/*:     # Media type
+             schema: 
+               type: string
+               format: binary 
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'   
+        '500':
+          description: Erro a obter informação da BD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status' 
+        '404':
+          description: Documento não Existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                          
   '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/estadoCandidatura':
     get:
       summary: Estado de uma candidatura
@@ -878,6 +930,44 @@ paths:
           description: Utilizador já existente
         '500':
           description: Erro no lado do servidor
+  /auth/registoCandidato:
+    post:
+      summary: Criar conta de candidato
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Email do utilizador
+                password:
+                  type: string
+                  description: Password do utilizador
+                dataNascimento:
+                  type: string
+                  description: Data de nascimento do utilizador (yyyy-mm-dd)
+                nome:
+                  type: string
+                  description: Nome do utilizador
+            encoding:
+              color:
+                style: form
+                explode: false
+      description: Ao chamar este endpoint é criada a conta de um candidato
+      operationId: registoEmpresa
+      tags:
+        - Autenticação
+      responses:
+        '200':
+          description: Conta criada com sucesso
+        '400':
+          description: 'Erro no lado do cliente (falta de argumentos, data errada....)'
+        '409':
+          description: Utilizador já existente
+        '500':
+          description: Erro no lado do servidor          
   '/propostas/getProposta/{idProposta}/':
     get:
       summary: Informação de uma proposta
