@@ -414,7 +414,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'               
-  '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/submissao':
+  '/candidatura/idProposta/{idProposta}/submissao':
     put:
       summary: Submissão de uma candidatura a uma proposta de emprego
       description: A invocação deste endpoint envolve a submissão de uma candidatura a uma proposta de emprego publicada
