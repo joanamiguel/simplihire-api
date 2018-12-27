@@ -25,18 +25,31 @@ servers:
   - url: 'http://localhost:3000'
     description: Local machine
 paths:
-
-  '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/documentos ':
+#candidaturas.js
+  '/candidatura/{idProposta}/anotacaoes':
     get:
-      summary: Obter informações dos documentos de uma candidatura
-      operationId: getDocumentos
+      summary: Obter anotações de uma candidatura
+      description: A invocação deste endpoint devolde as anotações de uma candidatura. Apenas Gestores Técnicos da Proposta podem aceder ao Endpoint.
+      operationId: gerAnotacoesDumaCandidatura
       tags:
         - Candidatura
       security:
-        - jwtAuth: []        
-      parameters:
+        - jwtAuth: []
+      parameters:      
+        - name: tipo_anotacao
+          in: query
+          required: false
+          description: O id do tipo de anotação
+          schema:
+            type: string
+        - name: fase
+          in: query
+          required: false
+          description: O id da fase onde a anotação foi introduzida
+          schema:
+            type: string
         - name: idCandidato
-          in: path
+          in: query
           required: true
           description: O id do candidato
           schema:
@@ -46,43 +59,102 @@ paths:
           required: true
           description: O id da proposta
           schema:
-            type: integer       
+            type: string
       responses:
         '200':
-          description: Documentos obtido com sucesso!
+          description: Anotações da Candidatura
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Documentos' 
+                $ref: '#/components/schemas/Anotacoes'
         '403':
           description: Utilizador sem permissões
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'   
+                $ref: '#/components/schemas/Status'
         '500':
           description: Erro a obter informação da BD
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status' 
-        '400':
-          description: Erro a obter documento
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'                                                      
-  '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/documentos/{idDocumento}':
-    get:
-      summary: Obter um documento de uma candidatura
-      operationId: getDocumento
+                $ref: '#/components/schemas/Status'
+    put:
+      summary: Adiciona anotacoes a uma candidatura
+      description: A invocação deste endpoint envolve a atribuição de anotações a uma candidatura
+      operationId: putAnotacoesNumaCandidatura
       tags:
         - Candidatura
       security:
-        - jwtAuth: []        
+        - jwtAuth: []
       parameters:
         - name: idCandidato
+          in: query
+          required: true
+          description: O id do candidato
+          schema:
+            type: string
+        - name: idProposta
           in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                tipo:
+                  type: integer
+                  description: 'Tipo de Anotação (int, ver tabela)'
+                descricao:
+                  type: string
+                  description: Descrição da Anotação
+                fase:
+                  type: integer
+                  description: Fase da Proposta (ver fases de uma proposta!)
+            encoding:
+              color:
+                style: form
+                explode: false
+      responses:
+        '200':
+          description: Anotações adicionadas com sucesso à candidatura
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Parâmetros em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Erro a Interir
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/candidatura/{idProposta}/documentos':
+    get:
+      summary: Obter informações dos documentos de uma candidatura
+      operationId: getDocumentos
+      tags:
+        - Candidatura
+      security:
+        - jwtAuth: []
+      parameters:
+        - name: idCandidato
+          in: query
           required: true
           description: O id do candidato
           schema:
@@ -93,39 +165,31 @@ paths:
           description: O id da proposta
           schema:
             type: integer
-        - name: idDocumento
-          in: path
-          required: true
-          description: O id do documento
-          schema:
-            type: integer         
       responses:
         '200':
-          description: Documento obtido com sucesso!
-          content:       # Response body
-            image/*:     # Media type
-             schema: 
-               type: string
-               format: binary 
+          description: Documentos obtido com sucesso!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Documentos'
+        '400':
+          description: Erro a obter documento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
         '403':
           description: Utilizador sem permissões
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'   
+                $ref: '#/components/schemas/Status'
         '500':
           description: Erro a obter informação da BD
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status' 
-        '404':
-          description: Documento não Existente
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'                                                      
-  '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/documentos':
+                $ref: '#/components/schemas/Status'
     put:
       summary: Submissão de um documento a uma candidatura
       description: A invocação deste endpoint envolve a submissão de um documento a uma candidatura
@@ -133,7 +197,7 @@ paths:
       tags:
         - Candidatura
       security:
-        - jwtAuth: []        
+        - jwtAuth: []
       requestBody:
         content:
           multipart/form-data:
@@ -147,7 +211,7 @@ paths:
                   format: binary
       parameters:
         - name: idCandidato
-          in: path
+          in: query
           required: true
           description: O id do candidato
           schema:
@@ -170,59 +234,24 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'   
+                $ref: '#/components/schemas/Status'
         '500':
           description: Erro a inserir
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                                   
-  '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/informacoes':
-    get:
-      summary: Informação de uma candidatura
-      description: A invocação deste endpoint retorna a informação/estado de uma candidatura
-      operationId: getInfoCandidatura
-      tags:
-        - Candidatura
-      security:
-        - jwtAuth: []        
-      parameters:
-        - name: idCandidato
-          in: path
-          required: true
-          description: O id do candidato
-          schema:
-            type: string
-        - name: idProposta
-          in: path
-          required: true
-          description: O id da proposta
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Informação relativa a uma candidatura a uma proposta
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Candidatura'
-        '403':
-          description: Utilizador sem permissões
-          content:
-            application/json:
-              schema:
                 $ref: '#/components/schemas/Status'                
-  '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/documentos/{idDocumento} ':
-    delete:
-      summary: Apagar um documento de uma candidatura
+  '/candidatura/{idProposta}/documentos/{idDocumento}':
+    get:
+      summary: Obter um documento de uma candidatura
       operationId: getDocumento
       tags:
         - Candidatura
       security:
-        - jwtAuth: []        
+        - jwtAuth: []
       parameters:
         - name: idCandidato
-          in: path
+          in: query
           required: true
           description: O id do candidato
           schema:
@@ -238,34 +267,86 @@ paths:
           required: true
           description: O id do documento
           schema:
-            type: integer         
+            type: integer
       responses:
         '200':
-          description: Documento apagado com sucesso!
-          content:       # Response body
-            image/*:     # Media type
-             schema: 
-               type: string
-               format: binary 
+          description: Documento obtido com sucesso!
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
         '403':
           description: Utilizador sem permissões
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'   
-        '500':
-          description: Erro a obter informação da BD
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status' 
+                $ref: '#/components/schemas/Status'
         '404':
           description: Documento não Existente
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                          
-  '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/estadoCandidatura':
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Erro a obter informação da BD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+    delete:
+      summary: Apagar um documento de uma candidatura
+      operationId: getDocumento
+      tags:
+        - Candidatura
+      security:
+        - jwtAuth: []
+      parameters:
+        - name: idCandidato
+          in: query
+          required: true
+          description: O id do candidato
+          schema:
+            type: string
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: integer
+        - name: idDocumento
+          in: path
+          required: true
+          description: O id do documento
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Documento apagado com sucesso!
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '404':
+          description: Documento não Existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Erro a obter informação da BD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                             
+  '/candidatura/{idProposta}/estado':
     get:
       summary: Estado de uma candidatura
       description: A invocação deste endpoint retorna o estado de uma candidatura
@@ -273,10 +354,10 @@ paths:
       tags:
         - Candidatura
       security:
-        - jwtAuth: []        
+        - jwtAuth: []
       parameters:
         - name: idCandidato
-          in: path
+          in: query
           required: true
           description: O id do candidato
           schema:
@@ -289,27 +370,76 @@ paths:
             type: string
       responses:
         '200':
-          description: Situacao relativa a uma candidatura a uma proposta
+          description: Estado relativa a uma candidatura a uma proposta
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Candidatura'       
-  '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/anotacaoes/':
-    put:
-      summary: Adiciona anotacoes a uma candidatura
-      description: A invocação deste endpoint envolve a atribuição de anotações a uma candidatura
-      operationId: putAnotacoesNumaCandidatura
+                type: object
+                properties:
+                  estado:
+                    type: string
+  '/candidatura/{idProposta}':
+    get:
+      summary: Submissão de uma candidatura a uma proposta de emprego
+      description: A invocação deste endpoint envolve a submissão de uma candidatura a uma proposta de emprego publicada
+      operationId: submitCandidatura
       tags:
         - Candidatura
       security:
-        - jwtAuth: []        
+        - jwtAuth: []
       parameters:
         - name: idCandidato
-          in: path
-          required: true
-          description: O id do candidato
+          in: query
+          required: false
+          description: Caso queira pesquisar por um candidato em específico
           schema:
             type: string
+        - name: sortedByEvaluation
+          in: query
+          required: false
+          description: Se pretende sorteado pela avaliação
+          schema:
+            type: string            
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Candidatura obtida com sucesso!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Candidaturas'
+        '500':
+          description: Erro a obter (Culpa do servidor)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Erro a obter (Culpa do cliente, falta de paramters!)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                               
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+    post:
+      summary: Submissão de uma candidatura a uma proposta de emprego
+      description: A invocação deste endpoint envolve a submissão de uma candidatura a uma proposta de emprego publicada
+      operationId: submitCandidatura
+      tags:
+        - Candidatura
+      security:
+        - jwtAuth: []
+      parameters:
         - name: idProposta
           in: path
           required: true
@@ -322,133 +452,90 @@ paths:
             schema:
               type: object
               properties:
-                tipo:
+                idCandidato:
                   type: integer
-                  description: Tipo de Anotação (int, ver tabela)
-                descricao:
-                  type: string
-                  description: Descrição da Anotação
+                  description: ID do utilizador a candidatar-se
                 fase:
                   type: integer
-                  description: Fase da Proposta (ver fases de uma proposta!)
+                  description: Fase a atribuir a candidatura
+                estado:
+                  type: string
+                  description: Estado inical da candidatura
+                emailReferencia:
+                  type: string
+                  description: Email de referência                
             encoding:
               color:
                 style: form
-                explode: false
-
-      responses:
-        '200':
-          description: Anotações adicionadas com sucesso à candidatura
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-        '400':
-          description: Parâmetros em falta
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-        '500':
-          description: Erro a Interir
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-        '403':
-          description: Utilizador sem permissões
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-  '/candidatura/idProposta/{idProposta}/idCandidato/{idCandidato}/anotacaoes':
-    get:
-      summary: Obter anotações de uma candidatura
-      description: A invocação deste endpoint devolde as anotações de uma candidatura. Apenas Gestores Técnicos da Proposta podem aceder ao Endpoint.
-      operationId: gerAnotacoesDumaCandidatura
-      tags:
-        - Candidatura
-      security:
-        - jwtAuth: []        
-      parameters:
-        - name: tipo_anotacao
-          in: query
-          required: false
-          description: O id do tipo de anotação
-          schema:
-            type: string
-        - name: fase
-          in: query
-          required: false
-          description: O id da fase onde a anotação foi introduzida
-          schema:
-            type: string              
-        - name: idCandidato
-          in: path
-          required: true
-          description: O id do candidato
-          schema:
-            type: string
-        - name: idProposta
-          in: path
-          required: true
-          description: O id da proposta
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Anotações da Candidatura
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Anotacoes'
-        '500':
-          description: Erro a obter informação da BD
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-        '403':
-          description: Utilizador sem permissões
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'               
-  '/candidatura/idProposta/{idProposta}/submissao':
-    put:
-      summary: Submissão de uma candidatura a uma proposta de emprego
-      description: A invocação deste endpoint envolve a submissão de uma candidatura a uma proposta de emprego publicada
-      operationId: submitCandidatura
-      tags:
-        - Candidatura
-      security:
-        - jwtAuth: []        
-      parameters:
-        - name: idCandidato
-          in: path
-          required: true
-          description: O id do candidato
-          schema:
-            type: string
-        - name: idProposta
-          in: path
-          required: true
-          description: O id da proposta
-          schema:
-            type: string
+                explode: false            
       responses:
         '200':
           description: Candidatura submetida com sucesso!
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Candidatura'
+                $ref: '#/components/schemas/Status'
         '403':
           description: Utilizador sem permissões
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                  
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Erro a submeter (Culpa do servidor)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Erro a submeter (Culpa do cliente, falta de paramters, ou candidatura/fase não existentes no sistema)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                   
+  '/candidatura/tiposAnotacoes':
+    get:
+      summary: Obter tipos de anotações
+      operationId: getTiposAnotacoes
+      security:
+        - jwtAuth: []
+      tags:
+        - Candidatura
+      responses:
+        '200':
+          description: Os tipos de anotações
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tipo_Anotacao'
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/candidatura/tiposDocumentos':
+    get:
+      summary: Obter tipos de documentos
+      operationId: getTiposDocumentos
+      security:
+        - jwtAuth: []
+      tags:
+        - Candidatura
+      responses:
+        '200':
+          description: Os tipos de Eventos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tipo_Documento'
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+#END candidaturas.js
   '/candidatos/{idCandidato}/caixamensagens/{idGestorProposta}/mensagens':
     get:
       summary: Mensagens recebidas do gestor da proposta pelo candidato a uma proposta de emprego
@@ -471,7 +558,7 @@ paths:
             type: string
       responses:
         '200':
-          description: Mensagens recebidas 
+          description: Mensagens recebidas
           content:
             application/json:
               schema:
@@ -519,7 +606,7 @@ paths:
       tags:
         - Candidatos
       security:
-        - jwtAuth: []        
+        - jwtAuth: []
       parameters:
         - name: idCandidato
           in: path
@@ -542,7 +629,7 @@ paths:
       tags:
         - Candidatos
       security:
-        - jwtAuth: []        
+        - jwtAuth: []
       parameters:
         - name: idCandidato
           in: path
@@ -556,7 +643,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExperienciaProfissional'   
+                $ref: '#/components/schemas/ExperienciaProfissional'
   '/candidatos/{idCandidato}/qualificacoes':
     put:
       summary: Indicação das qualificações técnicas de um candidato
@@ -565,7 +652,7 @@ paths:
       tags:
         - Candidatos
       security:
-        - jwtAuth: []        
+        - jwtAuth: []
       parameters:
         - name: idCandidato
           in: path
@@ -588,7 +675,7 @@ paths:
       tags:
         - Candidatos
       security:
-        - jwtAuth: []        
+        - jwtAuth: []
       parameters:
         - name: idCandidato
           in: path
@@ -611,7 +698,7 @@ paths:
       tags:
         - Candidatos
       security:
-        - jwtAuth: []        
+        - jwtAuth: []
       parameters:
         - name: idCandidato
           in: path
@@ -646,7 +733,7 @@ paths:
       tags:
         - Candidatos
       security:
-        - jwtAuth: []        
+        - jwtAuth: []
       parameters:
         - name: idCandidato
           in: path
@@ -681,7 +768,7 @@ paths:
       tags:
         - Candidatos
       security:
-        - jwtAuth: []        
+        - jwtAuth: []
       parameters:
         - name: idCandidato
           in: path
@@ -766,7 +853,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-
   '/propostas/{idProposta}/encerrar':
     put:
       summary: Encerramento de uma proposta
@@ -967,7 +1053,7 @@ paths:
         '409':
           description: Utilizador já existente
         '500':
-          description: Erro no lado do servidor          
+          description: Erro no lado do servidor
   '/propostas/getProposta/{idProposta}/':
     get:
       summary: Informação de uma proposta
@@ -1060,7 +1146,7 @@ paths:
       tags:
         - Candidatos
       security:
-        - jwtAuth: []        
+        - jwtAuth: []
       parameters:
         - name: idCandidato
           in: path
@@ -1082,7 +1168,6 @@ paths:
       operationId: putAvaliadorTecnicoEntrevistaId
       tags:
         - Eventos
-        
       parameters:
         - name: idEvento
           in: path
@@ -1111,7 +1196,7 @@ paths:
       description: Ao chamar este endpoint devolve exame tecnico do candidato
       operationId: getExameTecnicoCandidatoId
       security:
-        - jwtAuth: []      
+        - jwtAuth: []
       tags:
         - Exame Técnico
       parameters:
@@ -1134,7 +1219,7 @@ paths:
       description: Ao chamar este endpoint devolve lista de exames tecnicos
       operationId: getExamesTecnicos
       security:
-        - jwtAuth: []      
+        - jwtAuth: []
       tags:
         - Exame Técnico
       responses:
@@ -1152,7 +1237,7 @@ paths:
       tags:
         - Exame Técnico
       security:
-        - jwtAuth: []        
+        - jwtAuth: []
       responses:
         '200':
           description: Retorna lista de avaliadores tecnicos
@@ -1167,7 +1252,6 @@ paths:
       operationId: putClassificacaoCandidatoId
       tags:
         - Exame Técnico
-        
       parameters:
         - name: idCandidato
           in: path
@@ -1195,7 +1279,6 @@ paths:
       summary: Adiciona perguntas ao exame tecnico de uma proposta
       description: Ao chamar este endpoint são adicionadas perguntas ao exame tecnico
       operationId: putPerguntasPropostaId
-      
       tags:
         - Exame Técnico
       parameters:
@@ -1236,7 +1319,7 @@ paths:
       description: Ao chamar este endpoint devolve as mensagens recebidas do gestor de proposta
       operationId: getMensagens
       security:
-        - jwtAuth: []      
+        - jwtAuth: []
       tags:
         - Mensagens
       responses:
@@ -1301,7 +1384,7 @@ paths:
   '/propostas/{idProposta}/associarEmpregado':
     put:
       summary: Associar empregado a uma proposta de emprego
-      description: Ao chamar este endpoint a tabela de permissões será alterada, inserindo ou atualizado
+      description: 'Ao chamar este endpoint a tabela de permissões será alterada, inserindo ou atualizado'
       operationId: associaAvaliadorAPropostaPorIds
       tags:
         - Propostas
@@ -1317,23 +1400,23 @@ paths:
                 watcher:
                   type: integer
                   description: Se utilizador vai ser watcher
-                  format: int1                  
+                  format: int1
                 gestorProposta:
                   type: integer
                   description: Se utilizador vai ser gestor de proposta
-                  format: int1               
+                  format: int1
                 avaliadorTecnico:
                   type: integer
-                  description: Se utilizador vai ser avaliador técnico  
-                  format: int1                    
+                  description: Se utilizador vai ser avaliador técnico
+                  format: int1
                 gestorEquipa:
                   type: integer
-                  description: Se utilizador vai ser gestor de equipa     
-                  format: int1                                                       
+                  description: Se utilizador vai ser gestor de equipa
+                  format: int1
             encoding:
               color:
                 style: form
-                explode: false        
+                explode: false
       parameters:
         - name: idProposta
           in: path
@@ -1361,8 +1444,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                                
-  '/eventos/tiposEventos':
+                $ref: '#/components/schemas/Status'
+  /eventos/tiposEventos:
     get:
       summary: Obter tipos de eventos
       operationId: getTiposEventos
@@ -1384,49 +1467,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'             
-  '/candidatura/tiposAnotacoes':
-    get:
-      summary: Obter tipos de anotações
-      operationId: getTiposAnotacoes
-      security:
-        - jwtAuth: []
-      tags:
-        - Candidatura
-      responses:
-        '200':
-          description: Os tipos de anotações
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Tipo_Anotacao'
-        '500':
-          description: Erro no servidor
-          content:
-            application/json:
-              schema:
                 $ref: '#/components/schemas/Status'
-  '/candidatura/tiposDocumentos':
-    get:
-      summary: Obter tipos de documentos
-      operationId: getTiposDocumentos
-      security:
-        - jwtAuth: []
-      tags:
-        - Candidatura
-      responses:
-        '200':
-          description: Os tipos de Eventos
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Tipo_Documento'
-        '500':
-          description: Erro no servidor
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'                      
 components:
   securitySchemes:
     jwtAuth:
@@ -1456,14 +1497,51 @@ components:
         $ref: '#/components/schemas/Candidato'
     Candidatura:
       required:
-        - id
+        - idCandidato
+        - avaliacao
         - estado
+        - dataInscricao
+        - ultimaAtualizacao
+        - Fase
       properties:
-        id:
+        idCandidato:
           type: integer
           format: int64
+        avaliacao:
+          type: string
         estado:
           type: string
+        dataInscricao:
+          type: string
+        ultimaAtualizacao:
+          type: string
+        emailReferencia:
+          type: string
+        Fase:
+          type: object
+          $ref: '#/components/schemas/Fase'          
+    Fase:
+      required:
+        - idFase
+        - titulo
+        - proposta
+        - ordem
+        - tipo
+      properties:
+        idFase:
+          type: integer
+        titulo:
+          type: string
+        proposta:
+          type: integer
+        ordem:
+          type: integer
+        tipo:
+          type: string
+    Candidaturas:
+      type: array
+      items:
+        $ref: '#/components/schemas/Candidatura'
     Proposta:
       required:
         - id
@@ -1559,7 +1637,7 @@ components:
           description: Descrição de erro simples
         devError:
           type: string
-          description: Erro com mais informação         
+          description: Erro com mais informação
     Exame_Tecnico:
       required:
         - id
@@ -1622,7 +1700,7 @@ components:
         fase:
           type: integer
         Empregado_Autor:
-          type: integer 
+          type: integer
         Tipo_Anotacao:
           type: object
           $ref: '#/components/schemas/Tipo_Anotacao'
@@ -1665,7 +1743,7 @@ components:
           type: integer
           format: int64
         Tipo_Documento:
-          $ref: '#/components/schemas/Tipo_Documento'        
+          $ref: '#/components/schemas/Tipo_Documento'
     Tipo_Documento:
       type: object
       required:
@@ -1676,7 +1754,7 @@ components:
           type: integer
           format: int64
         designacao:
-          type: string          
+          type: string
     Tipo_Evento:
       type: object
       required:
@@ -1687,4 +1765,4 @@ components:
           type: integer
           format: int64
         designacao:
-          type: string                    
+          type: string
