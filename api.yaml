@@ -536,73 +536,344 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
 #END candidaturas.js
-  '/candidatos/{idCandidato}/caixamensagens/{idGestorProposta}/mensagens':
-    get:
-      summary: Mensagens recebidas do gestor da proposta pelo candidato a uma proposta de emprego
-      description: A invocação deste endpoint devolve as mensagens recebidas pelo candidato provenientes do gestor de uma proposta
-      operationId: getMensagensGestorProposta
+#auth.js
+  /auth/login:
+    post:
+      summary: Início de sessão
+      description: Tanto o empregado como o candidato se podem autentificar através deste endpoint
+      operationId: login
       tags:
-        - Mensagens
-      parameters:
-        - name: idCandidato
-          in: path
-          required: true
-          description: O id do candidato de quem se pretende consultar as mensagens
-          schema:
-            type: string
-        - name: idGestorProposta
-          in: path
-          required: true
-          description: Autor das mensagens recebidas pelo candidato
-          schema:
-            type: string
+        - Autenticação
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Email do utilizador
+                password:
+                  type: string
+                  description: Password do utilizador
+                userType:
+                  type: string
+                  description: Tipo de utilizador -> Empresa ou Candidato
+            encoding:
+              color:
+                style: form
+                explode: false
       responses:
         '200':
-          description: Mensagens recebidas
+          description: Mensagem a identificar sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Mensagens'
-  '/candidatos/{idCandidato}/caixamensagens/{idGestorProposta}/mensagem':
-    put:
-      summary: Envio de uma mensagem a um gestor da proposta
-      description: A invocação deste endpoint remete ao envio de uma mensagem por parte do candidato ao gestor de propostas
-      operationId: sendMensagemGestorProposta
-      tags:
-        - Mensagens
-      parameters:
-        - name: idCandidato
-          in: path
-          required: true
-          description: O id do candidato
-          schema:
-            type: string
-        - name: idGestorProposta
-          in: path
-          required: true
-          description: O id do gestor da proposta
-          schema:
-            type: string
+                $ref: '#/components/schemas/LoginAnswer'
+        '401':
+          description: Password Errada / Utilizador não existente
+  /auth/logout:
+    get:
+      summary: Terminar sessão
+      description: 'Ao chamar este endpoint é terminada a sessão de um utilizador, quer sendo candidato ou empregador'
       security:
         - jwtAuth: []
+      operationId: logout
+      tags:
+        - Autenticação
       responses:
         '200':
-          description: Mensagem enviada com sucesso!
+          description: Utilizador com sessão terminada
+  /auth/registoEmpregado:
+    post:
+      summary: Criar conta de utilizador empregador
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Email do utilizador
+                password:
+                  type: string
+                  description: Password do utilizador
+                dataNascimento:
+                  type: string
+                  description: Data de nascimento do utilizador (yyyy-mm-dd)
+                nome:
+                  type: string
+                  description: Nome do utilizador
+                idEmpresa:
+                  type: number
+                  description: ID da empresa do utilizador (consultar bd)
+            encoding:
+              color:
+                style: form
+                explode: false
+      description: Ao chamar este endpoint é criada a conta de um utilizador de uma empresa empregadora
+      operationId: registoEmpresa
+      tags:
+        - Autenticação
+      responses:
+        '200':
+          description: Conta criada com sucesso
+        '400':
+          description: 'Erro no lado do cliente (falta de argumentos, data errada....)'
+        '409':
+          description: Utilizador já existente
+        '500':
+          description: Erro no lado do servidor
+  /auth/registoCandidato:
+    post:
+      summary: Criar conta de candidato
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Email do utilizador
+                password:
+                  type: string
+                  description: Password do utilizador
+                dataNascimento:
+                  type: string
+                  description: Data de nascimento do utilizador (yyyy-mm-dd)
+                nome:
+                  type: string
+                  description: Nome do utilizador
+            encoding:
+              color:
+                style: form
+                explode: false
+      description: Ao chamar este endpoint é criada a conta de um candidato
+      operationId: registoEmpresa
+      tags:
+        - Autenticação
+      responses:
+        '200':
+          description: Conta criada com sucesso
+        '400':
+          description: 'Erro no lado do cliente (falta de argumentos, data errada....)'
+        '409':
+          description: Utilizador já existente
+        '500':
+          description: Erro no lado do servidor
+#END auth.js
+#candidatos.js
+  '/candidatos/{idCandidato}/experiencias':
+    get:
+      summary: Experiências profissionais de um candidato
+      description: Este endpoint devolve a experiência profissional do candidato
+      operationId: getExperienciasProfisionais
+      tags:
+        - Candidatos
+      security:
+        - jwtAuth: []
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O ID do candidato com as experiências profissionais que se pretende obter
+          schema:
+            type: string
+      responses:
+        '200':
+          description: As experiências profissionais do candidato
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Mensagem'
-        '400':
-          description: Mensagem não foi enviada com sucesso
+                $ref: '#/components/schemas/ExperienciasProfissionais'
+        '403':
+          description: Utilizador não autorizado a aceder ao recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'         
+    put:
+      summary: Introduzir experiência profissional
+      description: Este endpoint deve inserir uma experiência profissional a um candidato
+      operationId: putExperienciaProfissional
+      tags:
+        - Candidatos
+      security:
+        - jwtAuth: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - designacao
+                - empresa
+                - dataInicio
+                - dataFim
+              properties:
+                designacao:
+                  type: string
+                  description: Designação da posição
+                empresa:
+                  type: string
+                  description: Empresa empregadora
+                dataInicio:
+                  type: string
+                  description: Data de início
+                dataFim:
+                  type: string
+                  description: Data de fim  
+            encoding:
+              color:
+                style: form
+                explode: false                    
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O ID do candidato com a experiência profissional que se pretende inserir
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Experiência profissional introduzida com successo
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/candidatos/{idCandidato}/qualificacoesCandidato':
+        '403':
+          description: Utilizador não autorizado a aceder ao recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                         
+        '500':
+          description: Erro a introduzir experiência profissional
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                                         
+    patch:
+      summary: Modificar experiência profissional de um candidato
+      description: Este endpoint deve modicar uma experiência profissional a um candidato
+      operationId: PatchExperienciaProfissional
+      tags:
+        - Candidatos
+      security:
+        - jwtAuth: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                designacao:
+                  type: string
+                  description: Designação da posição
+                empresa:
+                  type: string
+                  description: Empresa empregadora
+                dataInicio:
+                  type: string
+                  description: Data de início
+                dataFim:
+                  type: string
+                  description: Data de fim  
+            encoding:
+              color:
+                style: form
+                explode: false                    
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O ID do candidato com a experiência profissional que se pretende modificar
+          schema:
+            type: string
+        - name: idExperiencia_Profissional
+          in: query
+          required: true
+          description: O ID da experiência profissional que se pretende modificar
+          schema:
+            type: string            
+      responses:
+        '200':
+          description: Experiência profissional modificada com successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '403':
+          description: Utilizador não autorizado a aceder ao recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                       
+        '500':
+          description: Erro a modificar experiência profissional
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'           
+        '404':
+          description: Experiência profissional não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                  
+    delete:
+      summary: Eliminar experiência profissional a um candidato
+      description: Este endpoint deve inserir uma experiência profissional a um candidato
+      operationId: DeteteExperienciaProfissional
+      tags:
+        - Candidatos
+      security:
+        - jwtAuth: []
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O ID do candidato com a experiência profissional que se pretende modificar
+          schema:
+            type: string
+        - name: idExperiencia_Profissional
+          in: query
+          required: true
+          description: O ID da experiência profissional que se pretende remover
+          schema:
+            type: string            
+      responses:
+        '200':
+          description: Experiência profissional eliminada com successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '403':
+          description: Utilizador não autorizado a aceder ao recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                       
+        '500':
+          description: Erro a eliminar experiência profissional
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'           
+        '404':
+          description: Experiência profissional não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                                                                          
+  '/candidatos/{idCandidato}/competencias':
     get:
-      summary: Qualificações técnicas de um candidato
-      description: Este endpoint devolve as qualificações técnicas do candidato
-      operationId: getQualificacoesCandidato
+      summary: Competências técnicas de um candidato
+      description: Este endpoint devolve as experiências técnicas do candidato
+      operationId: getCompetenciasTecnicas
       tags:
         - Candidatos
       security:
@@ -611,21 +882,191 @@ paths:
         - name: idCandidato
           in: path
           required: true
-          description: O ID do candidato com as qualificações técnicas que se pretende obter
+          description: O ID do candidato com a competências técnicas que se pretende obter
           schema:
             type: string
       responses:
         '200':
-          description: As qualificações técnicas do candidato
+          description: As competências técnicas do candidato
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/QualificacoesTecnicas'
-  '/candidatos/{idCandidato}/experienciaCandidato':
+                $ref: '#/components/schemas/CompetenciasTecnicas'
+        '403':
+          description: Utilizador não autorizado a aceder ao recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'         
+    put:
+      summary: Introduzir competência técnica
+      description: Este endpoint deve inserir uma competência técnica a um candidato
+      operationId: putCompetenciasTecnicas
+      tags:
+        - Candidatos
+      security:
+        - jwtAuth: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - idCompetencia
+                - nivel
+              properties:
+                idCompetencia:
+                  type: string
+                  description: ID da competência
+                nivel:
+                  type: string
+                  description: Nível da competência técnica
+            encoding:
+              color:
+                style: form
+                explode: false                    
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O ID do candidato com a competência técnica que se pretende inserir
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Competência técnica introduzida com successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '403':
+          description: Utilizador não autorizado a aceder ao recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                         
+        '500':
+          description: Erro a introduzir competência técnica
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'             
+        '400':
+          description: Competência técnica já existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                  
+    patch:
+      summary: Modificar competência técnica de um candidato
+      description: Este endpoint deve modicar uma competência técnica a um candidato
+      operationId: PatchCompetenciasCandidato
+      tags:
+        - Candidatos
+      security:
+        - jwtAuth: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                nivel:
+                  type: string
+                  description: Nível da competência técnica
+            encoding:
+              color:
+                style: form
+                explode: false                    
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O ID do candidato com a competência técnica que se pretende modificar
+          schema:
+            type: string
+        - name: idCompetenciaTecnica
+          in: query
+          required: true
+          description: ID da competência técnica a atualizar
+          schema:
+            type: string            
+      responses:
+        '200':
+          description: Competência técnica modificada com successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '403':
+          description: Utilizador não autorizado a aceder ao recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                       
+        '500':
+          description: Erro a modificar competência técnica
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'           
+        '404':
+          description: Competência técnica não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                  
+    delete:
+      summary: Eliminar competência técnica a um candidato
+      description: Este endpoint deve eliminar uma competência técnica a um candidato
+      operationId: DeteteCompetenciasCandidato
+      tags:
+        - Candidatos
+      security:
+        - jwtAuth: []
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O ID do candidato com a competência técnica que se pretende eliminar
+          schema:
+            type: string
+        - name: idCompetenciaTecnica
+          in: query
+          required: true
+          description: ID da competência técnica a remover
+          schema:
+            type: string          
+      responses:
+        '200':
+          description: Competência técnica eliminada com successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '403':
+          description: Utilizador não autorizado a aceder ao recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                       
+        '500':
+          description: Erro a eliminar competência técnica
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'           
+        '404':
+          description: Competência técnica não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                                                                          
+  '/candidatos/{idCandidato}/candidaturas':
     get:
-      summary: Experiência de um candidato
-      description: Este endpoint devolve a experiência profissional do candidato
-      operationId: getExperienciaProfissional
+      summary: Lista de candidaruras do candidato
+      description: Ao chamar este endpoint devolve a lista de candidaturas do candidato
+      operationId: getCandidaturasCandidato
       tags:
         - Candidatos
       security:
@@ -634,21 +1075,21 @@ paths:
         - name: idCandidato
           in: path
           required: true
-          description: O ID do candidato com a experiência profissional que se pretende obter
+          description: O id do candidato a quem as candidaturas pertencem
           schema:
             type: string
       responses:
         '200':
-          description: A experiência profissional do candidato
+          description: Uma lista das candidaturas
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExperienciaProfissional'
-  '/candidatos/{idCandidato}/qualificacoes':
-    put:
-      summary: Indicação das qualificações técnicas de um candidato
-      description: O candidato submete as suas qualificações técnicas
-      operationId: putQualificacoesCandidato
+                $ref: '#/components/schemas/Candidatura'
+  '/candidatos/{idCandidato}':
+    get:
+      summary: Informação de um candidato
+      description: Ao chamar este endpoint devolve informação pessoal de um candidato
+      operationId: getCandidatoById
       tags:
         - Candidatos
       security:
@@ -657,132 +1098,140 @@ paths:
         - name: idCandidato
           in: path
           required: true
-          description: O id do candidato que submete as qualificações técnicas
+          description: O id do candidato a obter
           schema:
             type: string
       responses:
         '200':
-          description: Qualificações técnicas submetidas com sucesso!
+          description: Um candidato
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/QualificacoesTecnicas'
-  '/candidatos/{idCandidato}/experienciaProfissional':
+                $ref: '#/components/schemas/Candidato'
+#END candidatos.js
+#competencias.js
+#END competencias.js
+#empregado.js
+#END empregado.js
+#eventos.js
+  '/eventos/{idEvento}/avaliadorTecnico':
     put:
-      summary: Indicação da experiência de um candidato
-      description: O candidato submete a sua experiência profissional
-      operationId: putExperiencia
+      summary: Adicionar avaliador tecnico numa entrevista
+      description: Ao chamar este endpoint uma um avaliador tecnico é adicionado a uma entrevista
+      operationId: putAvaliadorTecnicoEntrevistaId
       tags:
-        - Candidatos
-      security:
-        - jwtAuth: []
+        - Eventos
       parameters:
-        - name: idCandidato
+        - name: idEvento
           in: path
           required: true
-          description: O id do candidato que submete a experiência profissional
+          description: O id do evento(entrevista) a qual se quer adicionar o avaliador tecnico
           schema:
             type: string
+      security:
+        - jwtAuth: []
       responses:
         '200':
-          description: Experiência profissional submetida com sucesso!
+          description: Avaliador tecnico adicionado com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExperienciaProfissional'
-  '/candidatos/{idCandidato}/proposta{idProposta}/putEstado/{estado}':
-    put:
-      summary: Associa estado a uma candidatura
-      description: A invocação deste endpoint envolve a atribuição de um estado a uma candidatura
-      operationId: putEstadoEmCandidatura
-      tags:
-        - Candidatos
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Erro a adicionar avaliador tecnico
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /eventos/tiposEventos:
+    get:
+      summary: Obter tipos de eventos
+      operationId: getTiposEventos
       security:
         - jwtAuth: []
+      tags:
+        - Eventos
+      responses:
+        '200':
+          description: Os tipos de Eventos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tipo_Evento'
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+#END eventos.js
+#proposta.js
+  '/propostas/{idProposta}/associarEmpregado':
+    put:
+      summary: Associar empregado a uma proposta de emprego
+      description: 'Ao chamar este endpoint a tabela de permissões será alterada, inserindo ou atualizado'
+      operationId: associaAvaliadorAPropostaPorIds
+      tags:
+        - Propostas
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                idEmpregado:
+                  type: string
+                  description: ID do empregado em associar permissões
+                watcher:
+                  type: integer
+                  description: Se utilizador vai ser watcher
+                  format: int1
+                gestorProposta:
+                  type: integer
+                  description: Se utilizador vai ser gestor de proposta
+                  format: int1
+                avaliadorTecnico:
+                  type: integer
+                  description: Se utilizador vai ser avaliador técnico
+                  format: int1
+                gestorEquipa:
+                  type: integer
+                  description: Se utilizador vai ser gestor de equipa
+                  format: int1
+            encoding:
+              color:
+                style: form
+                explode: false
       parameters:
-        - name: idCandidato
-          in: path
-          required: true
-          description: O id do candidato
-          schema:
-            type: string
         - name: idProposta
           in: path
           required: true
           description: O id da proposta
           schema:
             type: string
-        - name: estado
-          in: path
-          required: true
-          description: O estado da candidatura
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Estado adicionado à candidatura com sucesso!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Candidatura'
-  '/candidatos/{idCandidato}/proposta{idProposta}/putSituacao/{situacao}':
-    put:
-      summary: Associa situacao a uma candidatura
-      description: A invocação deste endpoint envolve a atribuição de uma situacao a uma candidatura
-      operationId: putSituacaoEmCandidatura
-      tags:
-        - Candidatos
       security:
         - jwtAuth: []
-      parameters:
-        - name: idCandidato
-          in: path
-          required: true
-          description: O id do candidato
-          schema:
-            type: string
-        - name: idProposta
-          in: path
-          required: true
-          description: O id da proposta
-          schema:
-            type: string
-        - name: situacao
-          in: path
-          required: true
-          description: A situacao da candidatura
-          schema:
-            type: string
       responses:
         '200':
-          description: Situacao adicionada à candidatura com sucesso!
+          description: Empregado associado com sucesso à proposta
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Candidatura'
-  '/candidatos/{idCandidato}/propostas':
-    get:
-      summary: Lista de propostas do candidato
-      description: Ao chamar este endpoint devolve a lista de propostas do candidato
-      operationId: getPropostasCandidato
-      tags:
-        - Candidatos
-      security:
-        - jwtAuth: []
-      parameters:
-        - name: idCandidato
-          in: path
-          required: true
-          description: O id do candidato a quem as propostas pertencem
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Uma lista das propostas
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Erro a associador o empregado à proposta (erro do cliente)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Propostas'
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Erro a associador o empregado à proposta (erro do servidor)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
   '/propostas/{idProposta}/putEstadoProposta/{estado}':
     put:
       summary: Adiciona estado a proposta de emprego
@@ -928,132 +1377,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Propostas'
-  /auth/login:
-    post:
-      summary: Início de sessão
-      description: Tanto o empregado como o candidato se podem autentificar através deste endpoint
-      operationId: login
-      tags:
-        - Autenticação
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  description: Email do utilizador
-                password:
-                  type: string
-                  description: Password do utilizador
-                userType:
-                  type: string
-                  description: Tipo de utilizador -> Empresa ou Candidato
-            encoding:
-              color:
-                style: form
-                explode: false
-      responses:
-        '200':
-          description: Mensagem a identificar sucesso
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LoginAnswer'
-        '401':
-          description: Password Errada / Utilizador não existente
-  /auth/logout:
-    get:
-      summary: Terminar sessão
-      description: 'Ao chamar este endpoint é terminada a sessão de um utilizador, quer sendo candidato ou empregador'
-      security:
-        - jwtAuth: []
-      operationId: logout
-      tags:
-        - Autenticação
-      responses:
-        '200':
-          description: Utilizador com sessão terminada
-  /auth/registoEmpregado:
-    post:
-      summary: Criar conta de utilizador empregador
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  description: Email do utilizador
-                password:
-                  type: string
-                  description: Password do utilizador
-                dataNascimento:
-                  type: string
-                  description: Data de nascimento do utilizador (yyyy-mm-dd)
-                nome:
-                  type: string
-                  description: Nome do utilizador
-                idEmpresa:
-                  type: number
-                  description: ID da empresa do utilizador (consultar bd)
-            encoding:
-              color:
-                style: form
-                explode: false
-      description: Ao chamar este endpoint é criada a conta de um utilizador de uma empresa empregadora
-      operationId: registoEmpresa
-      tags:
-        - Autenticação
-      responses:
-        '200':
-          description: Conta criada com sucesso
-        '400':
-          description: 'Erro no lado do cliente (falta de argumentos, data errada....)'
-        '409':
-          description: Utilizador já existente
-        '500':
-          description: Erro no lado do servidor
-  /auth/registoCandidato:
-    post:
-      summary: Criar conta de candidato
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  description: Email do utilizador
-                password:
-                  type: string
-                  description: Password do utilizador
-                dataNascimento:
-                  type: string
-                  description: Data de nascimento do utilizador (yyyy-mm-dd)
-                nome:
-                  type: string
-                  description: Nome do utilizador
-            encoding:
-              color:
-                style: form
-                explode: false
-      description: Ao chamar este endpoint é criada a conta de um candidato
-      operationId: registoEmpresa
-      tags:
-        - Autenticação
-      responses:
-        '200':
-          description: Conta criada com sucesso
-        '400':
-          description: 'Erro no lado do cliente (falta de argumentos, data errada....)'
-        '409':
-          description: Utilizador já existente
-        '500':
-          description: Erro no lado do servidor
   '/propostas/getProposta/{idProposta}/':
     get:
       summary: Informação de uma proposta
@@ -1138,54 +1461,66 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/candidatos/{idCandidato}/':
+#END proposta.js
+
+  '/candidatos/{idCandidato}/caixamensagens/{idGestorProposta}/mensagens':
     get:
-      summary: Informação de um candidato
-      description: Ao chamar este endpoint devolve informação pessoal de um candidato
-      operationId: getCandidatoById
+      summary: Mensagens recebidas do gestor da proposta pelo candidato a uma proposta de emprego
+      description: A invocação deste endpoint devolve as mensagens recebidas pelo candidato provenientes do gestor de uma proposta
+      operationId: getMensagensGestorProposta
       tags:
-        - Candidatos
-      security:
-        - jwtAuth: []
+        - Mensagens
       parameters:
         - name: idCandidato
           in: path
           required: true
-          description: O id do candidato a obter
+          description: O id do candidato de quem se pretende consultar as mensagens
+          schema:
+            type: string
+        - name: idGestorProposta
+          in: path
+          required: true
+          description: Autor das mensagens recebidas pelo candidato
           schema:
             type: string
       responses:
         '200':
-          description: Um candidato
+          description: Mensagens recebidas
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Candidato'
-  '/eventos/{idEvento}/avaliadorTecnico':
+                $ref: '#/components/schemas/Mensagens'
+  '/candidatos/{idCandidato}/caixamensagens/{idGestorProposta}/mensagem':
     put:
-      summary: Adicionar avaliador tecnico numa entrevista
-      description: Ao chamar este endpoint uma um avaliador tecnico é adicionado a uma entrevista
-      operationId: putAvaliadorTecnicoEntrevistaId
+      summary: Envio de uma mensagem a um gestor da proposta
+      description: A invocação deste endpoint remete ao envio de uma mensagem por parte do candidato ao gestor de propostas
+      operationId: sendMensagemGestorProposta
       tags:
-        - Eventos
+        - Mensagens
       parameters:
-        - name: idEvento
+        - name: idCandidato
           in: path
           required: true
-          description: O id do evento(entrevista) a qual se quer adicionar o avaliador tecnico
+          description: O id do candidato
+          schema:
+            type: string
+        - name: idGestorProposta
+          in: path
+          required: true
+          description: O id do gestor da proposta
           schema:
             type: string
       security:
         - jwtAuth: []
       responses:
         '200':
-          description: Avaliador tecnico adicionado com sucesso
+          description: Mensagem enviada com sucesso!
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: '#/components/schemas/Mensagem'
         '400':
-          description: Erro a adicionar avaliador tecnico
+          description: Mensagem não foi enviada com sucesso
           content:
             application/json:
               schema:
@@ -1381,93 +1716,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Mensagens'
-  '/propostas/{idProposta}/associarEmpregado':
-    put:
-      summary: Associar empregado a uma proposta de emprego
-      description: 'Ao chamar este endpoint a tabela de permissões será alterada, inserindo ou atualizado'
-      operationId: associaAvaliadorAPropostaPorIds
-      tags:
-        - Propostas
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                idEmpregado:
-                  type: string
-                  description: ID do empregado em associar permissões
-                watcher:
-                  type: integer
-                  description: Se utilizador vai ser watcher
-                  format: int1
-                gestorProposta:
-                  type: integer
-                  description: Se utilizador vai ser gestor de proposta
-                  format: int1
-                avaliadorTecnico:
-                  type: integer
-                  description: Se utilizador vai ser avaliador técnico
-                  format: int1
-                gestorEquipa:
-                  type: integer
-                  description: Se utilizador vai ser gestor de equipa
-                  format: int1
-            encoding:
-              color:
-                style: form
-                explode: false
-      parameters:
-        - name: idProposta
-          in: path
-          required: true
-          description: O id da proposta
-          schema:
-            type: string
-      security:
-        - jwtAuth: []
-      responses:
-        '200':
-          description: Empregado associado com sucesso à proposta
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-        '400':
-          description: Erro a associador o empregado à proposta (erro do cliente)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-        '500':
-          description: Erro a associador o empregado à proposta (erro do servidor)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-  /eventos/tiposEventos:
-    get:
-      summary: Obter tipos de eventos
-      operationId: getTiposEventos
-      security:
-        - jwtAuth: []
-      tags:
-        - Eventos
-      responses:
-        '200':
-          description: Os tipos de Eventos
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Tipo_Evento'
-        '500':
-          description: Erro no servidor
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
+
+
 components:
   securitySchemes:
     jwtAuth:
@@ -1562,39 +1812,47 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Proposta'
-    QualificacaoTecnica:
+    CompetenciaTecnica:
       required:
-        - id
         - designacao
-        - nivel
+        - idCompetencia_Tecnica
       properties:
-        id:
+        idCompetencia_Tecnica:
           type: integer
           format: int64
         designacao:
           type: string
+        Competencias_do_Candidato:
+          $ref: '#/components/schemas/Competencias_do_Candidato'
+    Competencias_do_Candidato:
+      required:
+        - nivel
+      properties:
         nivel:
           type: string
-    ExperienciaProf:
+    CompetenciasTecnicas:
+      type: array
+      items:
+        $ref: '#/components/schemas/CompetenciaTecnica'
+    ExperienciasProfissionais:
+      type: array
+      items:
+        $ref: '#/components/schemas/ExperienciaProfissional'
+    ExperienciaProfissional:
       required:
+        - designacao
         - empresa
-        - prazo
-        - cargo
+        - dataInicio
+        - dataFim
       properties:
+        designacao:
+          type: string
         empresa:
           type: string
-        prazo:
+        dataInicio:
           type: string
-        cargo:
+        dataFim:
           type: string
-    QualificacoesTecnicas:
-      type: array
-      items:
-        $ref: '#/components/schemas/QualificacaoTecnica'
-    ExperienciaProfissional:
-      type: array
-      items:
-        $ref: '#/components/schemas/ExperienciaProf'
     Mensagem:
       required:
         - id
