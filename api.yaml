@@ -1525,6 +1525,75 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+  '/exameTecnico/{idProposta}/proposta/{idCandidato}/avaliaExameTecnicoCandidato':  
+    put:
+      summary: Avalia um exame técnico de um candidato e atribui a classificação à candidatura
+      description: A invocação deste endpoint envolve a atribuição da pontuação do exame técnico a um candidato
+      operationId: putAvaliacaoCandidatoExameTecnico
+      tags:
+        - Exame Técnico
+      security:
+        - jwtAuth: []
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato
+          schema:
+            type: string
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                res1:
+                  type: integer
+                  description: 'Resposta à pergunta de id = 1'
+                res2:
+                  type: integer
+                  description: 'Resposta à pergunta de id = 2'
+                res3:
+                  type: integer
+                  description: 'Resposta à pergunta de id = 3'
+                codigo:
+                  type: string
+                  description: 'Código realizado pelo candidato'
+            encoding:
+              color:
+                style: form
+                explode: false
+      responses:
+        '200':
+          description: Avaliação do exame técnico adicionada com sucesso à candidatura
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Parâmetros em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Erro a Interir
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
   '/exameTecnico/{idCandidato}/':
     get:
       summary: Exame tecnico de um candidato
@@ -1580,35 +1649,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Exame_Tecnico'
-  '/exameTecnico/classificacao/{idCandidato}/':
-    put:
-      summary: Classifica um candidato
-      description: Ao chamar este endpoint é atribuida uma nota ao candidato
-      operationId: putClassificacaoCandidatoId
-      tags:
-        - Exame Técnico
-      parameters:
-        - name: idCandidato
-          in: path
-          required: true
-          description: O id do candidato a que vai ser atribuida uma classificacao
-          schema:
-            type: string
-      security:
-        - jwtAuth: []
-      responses:
-        '200':
-          description: Classificacao atribuida com sucesso
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-        '400':
-          description: Erro a atribuir classificacao
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
   '/exameTecnico/propostas/{idProposta}':
     put:
       summary: Adiciona perguntas ao exame tecnico de uma proposta
