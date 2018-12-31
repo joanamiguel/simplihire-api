@@ -25,8 +25,7 @@ servers:
   - url: 'http://localhost:3000'
     description: Local machine
 paths:
-#candidaturas.js
-  '/candidatura/{idProposta}/anotacaoes':
+  '/candidatura/{idProposta}/anotacoes':
     get:
       summary: Obter anotações de uma candidatura
       description: A invocação deste endpoint devolde as anotações de uma candidatura. Apenas Gestores Técnicos da Proposta podem aceder ao Endpoint.
@@ -35,7 +34,7 @@ paths:
         - Candidatura
       security:
         - jwtAuth: []
-      parameters:      
+      parameters:
         - name: tipo_anotacao
           in: query
           required: false
@@ -240,7 +239,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                
+                $ref: '#/components/schemas/Status'
   '/candidatura/{idProposta}/documentos/{idDocumento}':
     get:
       summary: Obter um documento de uma candidatura
@@ -345,7 +344,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                             
+                $ref: '#/components/schemas/Status'
   '/candidatura/{idProposta}/estado':
     get:
       summary: Estado de uma candidatura
@@ -399,7 +398,7 @@ paths:
           required: false
           description: Se pretende sorteado pela avaliação
           schema:
-            type: string            
+            type: string
         - name: idProposta
           in: path
           required: true
@@ -413,20 +412,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Candidaturas'
-        '500':
-          description: Erro a obter (Culpa do servidor)
+        '400':
+          description: 'Erro a obter (Culpa do cliente, falta de paramters!)'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-        '400':
-          description: Erro a obter (Culpa do cliente, falta de paramters!)
+        '403':
+          description: Utilizador sem permissões
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                               
-        '403':
-          description: Utilizador sem permissões
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Erro a obter (Culpa do servidor)
           content:
             application/json:
               schema:
@@ -463,14 +462,20 @@ paths:
                   description: Estado inical da candidatura
                 emailReferencia:
                   type: string
-                  description: Email de referência                
+                  description: Email de referência
             encoding:
               color:
                 style: form
-                explode: false            
+                explode: false
       responses:
         '200':
           description: Candidatura submetida com sucesso!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: 'Erro a submeter (Culpa do cliente, falta de paramters, ou candidatura/fase não existentes no sistema)'
           content:
             application/json:
               schema:
@@ -487,13 +492,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-        '400':
-          description: Erro a submeter (Culpa do cliente, falta de paramters, ou candidatura/fase não existentes no sistema)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'                   
-  '/candidatura/tiposAnotacoes':
+  /candidatura/tiposAnotacoes:
     get:
       summary: Obter tipos de anotações
       operationId: getTiposAnotacoes
@@ -514,7 +513,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/candidatura/tiposDocumentos':
+  /candidatura/tiposDocumentos:
     get:
       summary: Obter tipos de documentos
       operationId: getTiposDocumentos
@@ -535,8 +534,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-#END candidaturas.js
-#auth.js
   /auth/login:
     post:
       summary: Início de sessão
@@ -663,8 +660,6 @@ paths:
           description: Utilizador já existente
         '500':
           description: Erro no lado do servidor
-#END auth.js
-#candidatos.js
   '/candidatos/{idCandidato}/experiencias':
     get:
       summary: Experiências profissionais de um candidato
@@ -693,7 +688,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'         
+                $ref: '#/components/schemas/Status'
+        '404':
+          description: Experiência profissional inexistente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
     put:
       summary: Introduzir experiência profissional
       description: Este endpoint deve inserir uma experiência profissional a um candidato
@@ -724,11 +725,11 @@ paths:
                   description: Data de início
                 dataFim:
                   type: string
-                  description: Data de fim  
+                  description: Data de fim
             encoding:
               color:
                 style: form
-                explode: false                    
+                explode: false
       parameters:
         - name: idCandidato
           in: path
@@ -748,13 +749,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                         
+                $ref: '#/components/schemas/Status'
         '500':
           description: Erro a introduzir experiência profissional
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                                         
+                $ref: '#/components/schemas/Status'
     patch:
       summary: Modificar experiência profissional de um candidato
       description: Este endpoint deve modicar uma experiência profissional a um candidato
@@ -780,11 +781,11 @@ paths:
                   description: Data de início
                 dataFim:
                   type: string
-                  description: Data de fim  
+                  description: Data de fim
             encoding:
               color:
                 style: form
-                explode: false                    
+                explode: false
       parameters:
         - name: idCandidato
           in: path
@@ -797,7 +798,7 @@ paths:
           required: true
           description: O ID da experiência profissional que se pretende modificar
           schema:
-            type: string            
+            type: string
       responses:
         '200':
           description: Experiência profissional modificada com successo
@@ -810,19 +811,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                       
-        '500':
-          description: Erro a modificar experiência profissional
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'           
+                $ref: '#/components/schemas/Status'
         '404':
           description: Experiência profissional não encontrada
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                  
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Erro a modificar experiência profissional
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
     delete:
       summary: Eliminar experiência profissional a um candidato
       description: Este endpoint deve inserir uma experiência profissional a um candidato
@@ -843,7 +844,7 @@ paths:
           required: true
           description: O ID da experiência profissional que se pretende remover
           schema:
-            type: string            
+            type: string
       responses:
         '200':
           description: Experiência profissional eliminada com successo
@@ -856,19 +857,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                       
-        '500':
-          description: Erro a eliminar experiência profissional
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'           
+                $ref: '#/components/schemas/Status'
         '404':
           description: Experiência profissional não encontrada
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                                                                          
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Erro a eliminar experiência profissional
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
   '/candidatos/{idCandidato}/competencias':
     get:
       summary: Competências técnicas de um candidato
@@ -897,7 +898,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'         
+                $ref: '#/components/schemas/Status'
     put:
       summary: Introduzir competência técnica
       description: Este endpoint deve inserir uma competência técnica a um candidato
@@ -924,7 +925,7 @@ paths:
             encoding:
               color:
                 style: form
-                explode: false                    
+                explode: false
       parameters:
         - name: idCandidato
           in: path
@@ -939,24 +940,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-        '403':
-          description: Utilizador não autorizado a aceder ao recurso
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'                         
-        '500':
-          description: Erro a introduzir competência técnica
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'             
         '400':
           description: Competência técnica já existente
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                  
+                $ref: '#/components/schemas/Status'
+        '403':
+          description: Utilizador não autorizado a aceder ao recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Erro a introduzir competência técnica
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
     patch:
       summary: Modificar competência técnica de um candidato
       description: Este endpoint deve modicar uma competência técnica a um candidato
@@ -977,7 +978,7 @@ paths:
             encoding:
               color:
                 style: form
-                explode: false                    
+                explode: false
       parameters:
         - name: idCandidato
           in: path
@@ -990,7 +991,7 @@ paths:
           required: true
           description: ID da competência técnica a atualizar
           schema:
-            type: string            
+            type: string
       responses:
         '200':
           description: Competência técnica modificada com successo
@@ -1003,19 +1004,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                       
-        '500':
-          description: Erro a modificar competência técnica
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'           
+                $ref: '#/components/schemas/Status'
         '404':
           description: Competência técnica não encontrada
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                  
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Erro a modificar competência técnica
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
     delete:
       summary: Eliminar competência técnica a um candidato
       description: Este endpoint deve eliminar uma competência técnica a um candidato
@@ -1036,7 +1037,7 @@ paths:
           required: true
           description: ID da competência técnica a remover
           schema:
-            type: string          
+            type: string
       responses:
         '200':
           description: Competência técnica eliminada com successo
@@ -1049,22 +1050,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                       
-        '500':
-          description: Erro a eliminar competência técnica
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'           
+                $ref: '#/components/schemas/Status'
         '404':
           description: Competência técnica não encontrada
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                                                                          
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Erro a eliminar competência técnica
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
   '/candidatos/{idCandidato}/candidaturas':
     get:
-      summary: Lista de candidaruras do candidato
+      summary: Lista de candidaturas do candidato
       description: Ao chamar este endpoint devolve a lista de candidaturas do candidato
       operationId: getCandidaturasCandidato
       tags:
@@ -1108,42 +1109,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Candidato'
-#END candidatos.js
-#competencias.js
-#END competencias.js
-#empregado.js
-#END empregado.js
-#eventos.js
-  '/eventos/{idEvento}/avaliadorTecnico':
-    put:
-      summary: Adicionar avaliador tecnico numa entrevista
-      description: Ao chamar este endpoint uma um avaliador tecnico é adicionado a uma entrevista
-      operationId: putAvaliadorTecnicoEntrevistaId
+  '/eventos/{idEvento}/info':
+    get:
+      summary: Dados/Informações de um evento
+      description: Ao chamar este endpoint os dados de um evento são retornados
+      operationId: getInfoEvento
       tags:
         - Eventos
       parameters:
         - name: idEvento
           in: path
           required: true
-          description: O id do evento(entrevista) a qual se quer adicionar o avaliador tecnico
+          description: O id do evento
           schema:
             type: string
       security:
         - jwtAuth: []
       responses:
-        '200':
-          description: Avaliador tecnico adicionado com sucesso
+        '404':
+          description: Evento não existente
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-        '400':
-          description: Erro a adicionar avaliador tecnico
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-  /eventos/tiposEventos:
+  '/eventos/tiposEventos':
     get:
       summary: Obter tipos de eventos
       operationId: getTiposEventos
@@ -1166,8 +1155,437 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-#END eventos.js
-#proposta.js
+  '/eventos/tipo/{idTipo}':
+    get:
+      summary: Dados/Informações de eventos de um certo tipo
+      description: Ao chamar este endpoint os dados de eventos de um certo tipo são retornados
+      operationId: getEventosbyTipo
+      tags:
+        - Eventos
+      parameters:
+        - name: idTipo
+          in: path
+          required: true
+          description: O id do tipo pretendido
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '400':
+          description: Evento não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/eventos/{idEvento}/getEmpregados':
+    get:
+      summary: Empregados associados a um evento
+      description: Ao chamar este endpoint são retornados os empregados associados a um evento
+      operationId: getEmpregadosAssociados
+      tags:
+        - Eventos
+      parameters:
+        - name: idEvento
+          in: path
+          required: true
+          description: O id do evento
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '400':
+          description: Evento não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/eventos/{idEvento}/getCandidato':
+    get:
+      summary: Candidato associado a um evento
+      description: Ao chamar este endpoint é retornado o candidato associado ao evento
+      operationId: getCandidatoAssociado
+      tags:
+        - Eventos
+      parameters:
+        - name: idEvento
+          in: path
+          required: true
+          description: O id do evento
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '400':
+          description: Evento não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/eventos/proposta/{idProposta}':
+    get:
+      summary: Eventos de uma proposta
+      description: Ao chamar este endpoint são retornados os eventos de uma proposta
+      operationId: getEventosProposta
+      tags:
+        - Eventos
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '400':
+          description: Evento não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/eventos/empregado/{idEmpregado}':
+    get:
+      summary: Eventos de um empregado
+      description: Ao chamar este endpoint são retornados os eventos de um empregado
+      operationId: getEventosEmpregado
+      tags:
+        - Eventos
+      parameters:
+        - name: idEmpregado
+          in: path
+          required: true
+          description: O id do empregado
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '400':
+          description: Evento não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/eventos/candidato/{idCandidato}':
+    get:
+      summary: Eventos de um candidato
+      description: Ao chamar este endpoint são retornados os eventos de um candidato
+      operationId: getEventosCandidato
+      tags:
+        - Eventos
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '400':
+          description: Evento não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/eventos/{idEvento}/perguntasDeSugestao':
+    get:
+      summary: Perguntas de Sugestão de um evento
+      description: Ao chamar este endpoint são retornados as perguntas de sugestão de um evento
+      operationId: getPerguntasSugestao
+      tags:
+        - Eventos
+      parameters:
+        - name: idEvento
+          in: path
+          required: true
+          description: O id do evento
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '400':
+          description: Evento não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/eventos/{idEvento}/putAnotacoes':
+    put:
+      summary: Adicionar uma nova anotação a um evento
+      description: Ao chamar este endpoint será adicionada uma nova anotação a um dado evento
+      operationId: putAnotacoesEvento
+      tags:
+        - Eventos
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                anotacoes:
+                  type: string
+                  description: texto das anotações
+            encoding:
+              color:
+                style: form
+                explode: false
+      parameters:
+        - name: idEvento
+          in: path
+          required: true
+          description: O id do evento
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Evento não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/eventos/{idEvento}/putEmpregado':
+    put:
+      summary: Associar um empregado a um evento
+      description: Ao chamar este endpoint será associado um empregado a um dado evento
+      operationId: putAssociarEmpregado
+      tags:
+        - Eventos
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                idEmpregado:
+                  type: string
+                  description: ID do empregado a associar
+            encoding:
+              color:
+                style: form
+                explode: false
+      parameters:
+        - name: idEvento
+          in: path
+          required: true
+          description: O id do evento
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Evento não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/eventos/{idEvento}/putPerguntaSugestao':
+    put:
+      summary: Associar uma pergunta de sugestão a um evento
+      description: Ao chamar este endpoint será associada uma pergunta de sugestão a um dado evento
+      operationId: putPerguntaSugestao
+      tags:
+        - Eventos
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                questao:
+                  type: string
+                  description: Questão a associar
+                descricao:
+                  type: string
+                  description: Descrição da questão
+                nivel:
+                  type: string
+                  description: Nível da questão
+                areaDesenvolvimento:
+                  type: string
+                  description: Área de desenvolvimento da questão
+                tipoPergunta:
+                  type: string
+                  description: Tipo da questão
+            encoding:
+              color:
+                style: form
+                explode: false
+      parameters:
+        - name: idEvento
+          in: path
+          required: true
+          description: O id do evento
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Pergunta_Sugestao não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/eventos/evento':
+    put:
+      summary: Criar um evento
+      description: Ao chamar este endpoint será criado um novo evento
+      operationId: putEvento
+      tags:
+        - Eventos
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                dataEvento:
+                  type: string
+                  description: Data do evento
+                anotacoes:
+                  type: string
+                  description: Anotações do evento
+                tipoEvento:
+                  type: integer
+                  description: ID do Tipo de Evento
+                  format: int1
+                fase:
+                  type: integer
+                  description: ID da Fase
+                  format: int1
+                candidato:
+                  type: integer
+                  description: ID do Candidato
+                  format: int1
+                proposta:
+                  type: integer
+                  description: ID da Proposta
+                  format: int1
+            encoding:
+              color:
+                style: form
+                explode: false
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/eventos/{idEvento}/data':
+    patch:
+      summary: Alterar data de um evento
+      description: Ao chamar este endpoint será alterada a data de um evento
+      operationId: patchNovaData
+      tags:
+        - Eventos
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                dataEvento:
+                  type: string
+                  description: Nova data do evento
+            encoding:
+              color:
+                style: form
+                explode: false
+      parameters:
+        - name: idEvento
+          in: path
+          required: true
+          description: O id do evento
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Evento não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/eventos/{idEvento}/hora':
+    patch:
+      summary: Alterar hora de um evento
+      description: Ao chamar este endpoint será alterada a hora de um evento
+      operationId: patchNovaHora
+      tags:
+        - Eventos
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                horaEvento:
+                  type: string
+                  description: Nova hora do evento
+            encoding:
+              color:
+                style: form
+                explode: false
+      parameters:
+        - name: idEvento
+          in: path
+          required: true
+          description: O id do evento
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Evento não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
   '/propostas/{idProposta}/associarEmpregado':
     put:
       summary: Associar empregado a uma proposta de emprego
@@ -1232,11 +1650,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/propostas/{idProposta}/putEstadoProposta/{estado}':
-    put:
-      summary: Adiciona estado a proposta de emprego
-      description: Ao chamar este endpoint será adicionada um estado a uma determinada proposta de emprego
-      operationId: putEstadoEmPropostaPorIds
+  '/propostas/{idProposta}':
+    get:
+      summary: Obter uma proposta segundo o seu ID
+      description: Ao chamar este endpoint será devolvida uma proposta segundo o ID presente no path
+      operationId: getProposta
       tags:
         - Propostas
       parameters:
@@ -1246,32 +1664,26 @@ paths:
           description: O id da proposta
           schema:
             type: string
-        - name: estado
-          in: path
-          required: true
-          description: O estado que se quer adicionar à proposta
-          schema:
-            type: string
       security:
         - jwtAuth: []
       responses:
-        '200':
-          description: Estado adicionado com sucesso
+        '404':
+          description: Proposta não existente
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-        '400':
-          description: Erro ao adicionar o estado
+        '500':
+          description: Campos em falta
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/propostas/{idProposta}/putFaseProposta/{fase}':
-    put:
-      summary: Adiciona fase a proposta de emprego
-      description: Ao chamar este endpoint será adicionada uma fase a uma determinada proposta de emprego
-      operationId: putFaseEmPropostaPorIds
+  '/propostas/{idProposta}/fases':
+    get:
+      summary: Obter as fases de uma proposta
+      description: Ao chamar este endpoint serão devolvidas as fases de uma proposta
+      operationId: getFasesProposta
       tags:
         - Propostas
       parameters:
@@ -1281,36 +1693,41 @@ paths:
           description: O id da proposta
           schema:
             type: string
-        - name: fase
-          in: path
-          required: true
-          description: A fase que se quer adicionar à proposta
-          schema:
-            type: string
       security:
         - jwtAuth: []
       responses:
-        '200':
-          description: Fase adicionada com sucesso
+        '404':
+          description: Fase não existente
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-        '400':
-          description: Erro ao adicionar a fase
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-  '/propostas/{idProposta}/encerrar':
+  '/propostas/{idProposta}/fase':
     put:
-      summary: Encerramento de uma proposta
-      description: Ao chamar este endpoint uma proposta adicionada é encerrada no sistema
-      operationId: closePropostaByID
+      summary: Adicionar uma fase a uma proposta
+      description: Ao chamar este endpoint uma fase é adicionada a uma proposta
+      operationId: putFaseProposta
       tags:
         - Propostas
-      security:
-        - jwtAuth: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                titulo:
+                  type: string
+                  description: Título da fase
+                ordem:
+                  type: string
+                  description: Ordem da fase
+                tipo:
+                  type: string
+                  description: Tipo da fase
+            encoding:
+              color:
+                style: form
+                explode: false
       parameters:
         - name: idProposta
           in: path
@@ -1318,24 +1735,20 @@ paths:
           description: O id da proposta a encerrar
           schema:
             type: string
+      security:
+        - jwtAuth: []
       responses:
         '200':
-          description: Proposta encerrada com sucesso
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-        '400':
-          description: Proposta encerrada com erro
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-  '/propostas/{idProposta}/getEstadoProposta':
-    get:
-      summary: GET estado de uma proposta
-      description: Ao chamar este endpoint devolve o estado em que uma determinada proposta se encontra
-      operationId: faseEstadoPorId
+  '/propostas/{idProposta}/publicar':
+    patch:
+      summary: Mudar o estado de uma proposta para "Publicada"
+      description: Ao chamar este endpoint o estado de uma proposta é alterado para "Publicada"
+      operationId: patchPublicarProposta
       security:
         - jwtAuth: []
       tags:
@@ -1344,21 +1757,33 @@ paths:
         - name: idProposta
           in: path
           required: true
-          description: O id da proposta à qual se quer descobrir o estado
+          description: O id da proposta 
           schema:
             type: string
       responses:
         '200':
-          description: O estado da proposta
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Propostas'
-  '/propostas/{idProposta}/getFaseProposta':
-    get:
-      summary: Fase de uma proposta
-      description: Ao chamar este endpoint devolve a fase em que uma determinada proposta se encontra
-      operationId: fasePropostaPorId
+        '400':
+          description: Proposta não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Propostas'
+        '404':
+          description: Estado não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Propostas'
+  '/propostas/{idProposta}/encerrar':
+    patch:
+      summary: Mudar o estado de uma proposta para "Encerrada"
+      description: Ao chamar este endpoint o estado de uma proposta é alterado para "Encerrada"
+      operationId: patchEncerrarProposta
       security:
         - jwtAuth: []
       tags:
@@ -1372,97 +1797,116 @@ paths:
             type: string
       responses:
         '200':
-          description: A fase da proposta
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Propostas'
-  '/propostas/getProposta/{idProposta}/':
+  '/empregado/{idEmpregado}/propostasAdicionadas':
     get:
-      summary: Informação de uma proposta
-      description: Ao chamar este endpoint devolve informação de uma proposta de emprego
-      operationId: getPropostaByID
+      summary: Obter as propostas adicionadas de um empregado
+      description: Ao chamar este endpoint serão devolvidas as propostas adicionadas de um empregado
+      operationId: getPropostasAdicionadas
       tags:
-        - Propostas
+        - Empregado
       parameters:
-        - name: idProposta
+        - name: idEmpregado
           in: path
           required: true
-          description: O id da proposta a obter
+          description: O id do empregado
           schema:
             type: string
       security:
         - jwtAuth: []
       responses:
-        '200':
-          description: Um candidato
+        '404':
+          description: Proposta não existente
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Proposta'
-  /propostas/propostasAdicionadas:
+                $ref: '#/components/schemas/Status'
+  '/empregado/{idEmpregado}/propostasPublicadas':
     get:
-      summary: Propostas Adicionadas
-      description: Ao chamar este endpoint devolve informações de todas as propostas adicionadas pela empresa
-      operationId: propostasAdicionadas
+      summary: Obter as propostas publicadas de um empregado
+      description: Ao chamar este endpoint serão devolvidas as propostas publicadas de um empregado
+      operationId: getPropostasPublicadas
+      tags:
+        - Empregado
+      parameters:
+        - name: idEmpregado
+          in: path
+          required: true
+          description: O id do empregado
+          schema:
+            type: string
       security:
         - jwtAuth: []
-      tags:
-        - Propostas
       responses:
-        '200':
-          description: As propostas adicionadas
+        '404':
+          description: Proposta não existente
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Propostas'
-  /propostas/propostasPublicadas:
-    get:
-      summary: Propostas Adicionadas
-      description: Ao chamar este endpoint devolve informações de todas as propostas publicadas pela empresa
-      operationId: propostasPublicadas
-      security:
-        - jwtAuth: []
-      tags:
-        - Propostas
-      responses:
-        '200':
-          description: As propostas publicadas
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Propostas'
-  '/propostas/{idProposta}/publicar':
+                $ref: '#/components/schemas/Status'
+  '/empregado/{idEmpregado}/adicionarProposta':
     put:
-      summary: Publicação de uma proposta
-      description: Ao chamar este endpoint uma proposta adicionada é públicada no sistema
-      operationId: publishPropostaByID
+      summary: Adicionar uma proposta
+      description: Ao chamar este endpoint uma proposta é adicionada
+      operationId: putProposta
       tags:
-        - Propostas
+        - Empregado
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                designacao:
+                  type: string
+                  description: Designação da Proposta
+                descricao:
+                  type: string
+                  description: Descrição da Proposta
+                datainicio:
+                  type: string
+                  description: Data de início da Proposta (YYYY-MM-DD)
+                datafim:
+                  type: string
+                  description: Data de fim da Proposta (YYYY-MM-DD)
+                areaDesenvolvimento:
+                  type: integer
+                  description: ID da Área de Desenvolvimento da Proposta
+                  format: int1
+                posicao:
+                  type: integer
+                  description: ID da Posição da Proposta
+                  format: int1
+            encoding:
+              color:
+                style: form
+                explode: false
       parameters:
-        - name: idProposta
+        - name: idEmpregado
           in: path
           required: true
-          description: O id da proposta a publicar
+          description: O id do empregado
           schema:
             type: string
       security:
         - jwtAuth: []
       responses:
         '200':
-          description: Proposta publicada com sucesso
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-        '400':
-          description: Proposta publicada com erro
+        '404':
+          description: Estado não existente
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-#END proposta.js
-
   '/candidatos/{idCandidato}/caixamensagens/{idGestorProposta}/mensagens':
     get:
       summary: Mensagens recebidas do gestor da proposta pelo candidato a uma proposta de emprego
@@ -1525,75 +1969,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/exameTecnico/{idProposta}/proposta/{idCandidato}/avaliaExameTecnicoCandidato':  
-    put:
-      summary: Avalia um exame técnico de um candidato e atribui a classificação à candidatura
-      description: A invocação deste endpoint envolve a atribuição da pontuação do exame técnico a um candidato
-      operationId: putAvaliacaoCandidatoExameTecnico
-      tags:
-        - Exame Técnico
-      security:
-        - jwtAuth: []
-      parameters:
-        - name: idCandidato
-          in: path
-          required: true
-          description: O id do candidato
-          schema:
-            type: string
-        - name: idProposta
-          in: path
-          required: true
-          description: O id da proposta
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                res1:
-                  type: integer
-                  description: 'Resposta à pergunta de id = 1'
-                res2:
-                  type: integer
-                  description: 'Resposta à pergunta de id = 2'
-                res3:
-                  type: integer
-                  description: 'Resposta à pergunta de id = 3'
-                codigo:
-                  type: string
-                  description: 'Código realizado pelo candidato'
-            encoding:
-              color:
-                style: form
-                explode: false
-      responses:
-        '200':
-          description: Avaliação do exame técnico adicionada com sucesso à candidatura
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-        '400':
-          description: Parâmetros em falta
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-        '403':
-          description: Utilizador sem permissões
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-        '500':
-          description: Erro a Interir
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
   '/exameTecnico/{idCandidato}/':
     get:
       summary: Exame tecnico de um candidato
@@ -1649,6 +2024,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Exame_Tecnico'
+  '/exameTecnico/classificacao/{idCandidato}/':
+    put:
+      summary: Classifica um candidato
+      description: Ao chamar este endpoint é atribuida uma nota ao candidato
+      operationId: putClassificacaoCandidatoId
+      tags:
+        - Exame Técnico
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato a que vai ser atribuida uma classificacao
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Classificacao atribuida com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Erro a atribuir classificacao
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
   '/exameTecnico/propostas/{idProposta}':
     put:
       summary: Adiciona perguntas ao exame tecnico de uma proposta
@@ -1756,8 +2160,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Mensagens'
-
-
 components:
   securitySchemes:
     jwtAuth:
@@ -1809,7 +2211,7 @@ components:
           type: string
         Fase:
           type: object
-          $ref: '#/components/schemas/Fase'          
+          $ref: '#/components/schemas/Fase'
     Fase:
       required:
         - idFase
