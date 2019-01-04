@@ -1086,6 +1086,70 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Candidatura'
+  '/candidatos/notificacoes':
+    get:
+      summary: Obter as notificações de um candidato
+      description: Ao chamar este endpoint serão devolvidas as notificações de um candidato. O candidato é identificado através da chave JWT.
+      operationId: getNotificacoesCandidato
+      tags:
+        - Candidatos
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Número de notificações a obter
+          schema:
+            type: string
+        - name: offset
+          in: query
+          required: false
+          description: Offset de notificações (quantas notificações avança)
+          schema:
+            type: string            
+      security:
+        - jwtAuth: []
+      responses:
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '200':
+          description: Notificações de um candidato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notificacoes'
+  '/candidatos/readNotificacoes':
+    post:
+      summary: Marcar notificações como lidas
+      description: Ao chamar este endpoint serão marcadas as notificações de um candidato como lidas. O candidato é identificado através da chave JWT.
+      operationId: postNotificacoesCandidato
+      tags:
+        - Candidatos
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Número de notificações a obter
+          schema:
+            type: string    
+      security:
+        - jwtAuth: []
+      responses:
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '200':
+          description: Notificações marcadas como lidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                                    
   '/candidatos/{idCandidato}':
     get:
       summary: Informação de um candidato
@@ -1132,7 +1196,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/eventos/tiposEventos':
+  /eventos/tiposEventos:
     get:
       summary: Obter tipos de eventos
       operationId: getTiposEventos
@@ -1454,7 +1518,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/eventos/evento':
+  /eventos/evento:
     put:
       summary: Criar um evento
       description: Ao chamar este endpoint será criado um novo evento
@@ -1757,7 +1821,7 @@ paths:
         - name: idProposta
           in: path
           required: true
-          description: O id da proposta 
+          description: O id da proposta
           schema:
             type: string
       responses:
@@ -1907,6 +1971,70 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+  '/empregado/notificacoes':
+    get:
+      summary: Obter as notificações de um empregado
+      description: Ao chamar este endpoint serão devolvidas as notificações de um empregado. O empregado é identificado através da chave JWT.
+      operationId: getNotificacoesEmpregado
+      tags:
+        - Empregado
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Número de notificações a obter
+          schema:
+            type: string
+        - name: offset
+          in: query
+          required: false
+          description: Offset de notificações (quantas notificações avança)
+          schema:
+            type: string            
+      security:
+        - jwtAuth: []
+      responses:
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '200':
+          description: Notificações de um empregado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notificacoes'
+  '/empregado/readNotificacoes':
+    post:
+      summary: Marcar notificações como lidas
+      description: Ao chamar este endpoint serão marcadas as notificações de um empregado como lidas. O empregado é identificado através da chave JWT.
+      operationId: postNotificacoesEmpregado
+      tags:
+        - Empregado
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Número de notificações a obter
+          schema:
+            type: string    
+      security:
+        - jwtAuth: []
+      responses:
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '200':
+          description: Notificações marcadas como lidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                                    
   '/candidatos/{idCandidato}/caixamensagens/{idGestorProposta}/mensagens':
     get:
       summary: Mensagens recebidas do gestor da proposta pelo candidato a uma proposta de emprego
@@ -2466,3 +2594,44 @@ components:
           format: int64
         designacao:
           type: string
+    Notificacoes:
+      type: array
+      items:
+        $ref: '#/components/schemas/Notificacao'
+    Notificacao:
+      type: object
+      required:
+        - idNotificacao
+        - read
+        - titulo
+        - descricao
+        - createdAt 
+        - TipoNotificacao
+      properties:
+        idNotificacao:
+          type: integer
+          format: int64
+        read:
+          type: integer
+          format: int1
+        titulo:
+          type: string
+        descricao:
+          type: string
+        createdAt:
+          type: string
+        TipoNotificacao:
+          $ref: '#/components/schemas/TipoNotificacao'            
+    TipoNotificacao:
+      type: object
+      required:
+        - idtipoNotificacao
+        - descricao
+      properties:
+        idtipoNotificacao:
+          type: integer
+          format: int64
+        descricao:
+          type: string 
+        
+     
