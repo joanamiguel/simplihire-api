@@ -1866,6 +1866,139 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Propostas'
+  '/propostas/areasDesenvolvimento':
+    get:
+      summary: Obter áreas de desenvolvimento
+      description: Ao chamar este endpoint será devolvida a lista de áreas de desenvolvimento definidas no sistema
+      operationId: getAreasDesenvolvimento
+      tags:
+        - Propostas
+      security:
+        - jwtAuth: []
+      responses:
+        '403':
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '200':
+          description: Áreas de Desenvolvimento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AreasDesenvolvimento'
+  '/propostas/posicoes':
+    get:
+      summary: Obter posições
+      description: Ao chamar este endpoint será devolvida a lista de posições definidas no sistema
+      operationId: getAreasDesenvolvimento
+      tags:
+        - Propostas
+      security:
+        - jwtAuth: []
+      responses:
+        '403':
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '200':
+          description: Posições possíveis no sistema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Posicoes'
+  '/propostas/estados':
+    get:
+      summary: Obter estados 
+      description: Ao chamar este endpoint será devolvida a lista de estados definidas no sistema
+      operationId: getAreasDesenvolvimento
+      tags:
+        - Propostas
+      security:
+        - jwtAuth: []
+      responses:
+        '403':
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '200':
+          description: Estados possíveis no sistema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Estados'                                
+  '/propostas/':
+    put:
+      summary: Adicionar uma proposta
+      description: Ao chamar este endpoint uma proposta é adicionada
+      operationId: putProposta
+      tags:
+        - Empregado
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                designacao:
+                  type: string
+                  description: Designação da Proposta
+                descricao:
+                  type: string
+                  description: Descrição da Proposta
+                datainicio:
+                  type: string
+                  description: Data de início da Proposta (YYYY-MM-DD)
+                datafim:
+                  type: string
+                  description: Data de fim da Proposta (YYYY-MM-DD)
+                areaDesenvolvimento:
+                  type: integer
+                  description: ID da Área de Desenvolvimento da Proposta
+                  format: int1
+                posicao:
+                  type: integer
+                  description: ID da Posição da Proposta
+                  format: int1
+                fases:
+                  type: object
+                  description: 'Fases de uma proposta, em JSON (Array do objeto Fase, tendo o título, ordem, e tipo)'
+                documentos:
+                  type: object
+                  description: 'Documentos de uma proposta, em JSON (Array do objeto Documento, tendo o idDocumentoPedido)'
+                competencias:
+                  type: object
+                  description: 'Competências de uma proposta, em JSON (Array do objeto Competência, tendo o idCompetencia_Tecnica e nível)'                  
+            encoding:
+              color:
+                style: form
+                explode: false
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '403':
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                
+        '404':
+          description: Estado não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                
   '/empregado/{idEmpregado}/propostasAdicionadas':
     get:
       summary: Obter as propostas adicionadas de um empregado
@@ -1908,65 +2041,6 @@ paths:
       responses:
         '404':
           description: Proposta não existente
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-  '/empregado/{idEmpregado}/adicionarProposta':
-    put:
-      summary: Adicionar uma proposta
-      description: Ao chamar este endpoint uma proposta é adicionada
-      operationId: putProposta
-      tags:
-        - Empregado
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                designacao:
-                  type: string
-                  description: Designação da Proposta
-                descricao:
-                  type: string
-                  description: Descrição da Proposta
-                datainicio:
-                  type: string
-                  description: Data de início da Proposta (YYYY-MM-DD)
-                datafim:
-                  type: string
-                  description: Data de fim da Proposta (YYYY-MM-DD)
-                areaDesenvolvimento:
-                  type: integer
-                  description: ID da Área de Desenvolvimento da Proposta
-                  format: int1
-                posicao:
-                  type: integer
-                  description: ID da Posição da Proposta
-                  format: int1
-            encoding:
-              color:
-                style: form
-                explode: false
-      parameters:
-        - name: idEmpregado
-          in: path
-          required: true
-          description: O id do empregado
-          schema:
-            type: string
-      security:
-        - jwtAuth: []
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-        '404':
-          description: Estado não existente
           content:
             application/json:
               schema:
@@ -2633,5 +2707,48 @@ components:
           format: int64
         descricao:
           type: string 
-        
-     
+    Estados:
+      type: array
+      items:
+        $ref: '#/components/schemas/Estado'        
+    AreasDesenvolvimento:
+      type: array
+      items:
+        $ref: '#/components/schemas/AreaDesenvolvimento' 
+    Posicoes:
+      type: array
+      items:
+        $ref: '#/components/schemas/Posicao'        
+    Estado:
+      type: object
+      required:
+        - idEstado
+        - designacao
+      properties:
+        idEstado:
+          type: integer
+          format: int64
+        designacao:
+          type: string
+    AreaDesenvolvimento:
+      type: object
+      required:
+        - idAreaDesenvolvimento
+        - descricao
+      properties:
+        idAreaDesenvolvimento:
+          type: integer
+          format: int64
+        descricao:
+          type: string
+    Posicao:
+      type: object
+      required:
+        - idPosicao
+        - titulo
+      properties:
+        idPosicao:
+          type: integer
+          format: int64
+        titulo:
+          type: string          
