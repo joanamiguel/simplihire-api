@@ -21,10 +21,41 @@ tags:
     description: Endpoints relativos à interface gráfica
   - name: Mensagens
     description: Endpoints relativos às mensagens
+  - name: Competências Técnicas
+    description: Endpoints relativos às competências técnicas    
 servers:
   - url: 'http://localhost:3000'
     description: Local machine
 paths:
+  '/candidatura/{idProposta}/candidato':
+    get:
+      summary: Informação de um candidato
+      description: Ao chamar este endpoint devolve informação pessoal de um candidato asociado a uma candidatura
+      operationId: getCandidatoById
+      tags:
+        - Candidatura
+      security:
+        - jwtAuth: []
+      parameters:
+        - name: idCandidato
+          in: query
+          required: true
+          description: O id do candidato a obter
+          schema:
+            type: string
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string      
+      responses:
+        '200':
+          description: Um candidato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Candidato'
   '/candidatura/{idProposta}/anotacoes':
     get:
       summary: Obter anotações de uma candidatura
@@ -492,6 +523,68 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+    patch:
+      summary: Atualização de uma candidatura
+      description: A invocação deste endpoint envolve a atualização de uma candidatura a uma proposta de emprego publicada
+      operationId: submitCandidatura
+      tags:
+        - Candidatura
+      security:
+        - jwtAuth: []
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                idCandidato:
+                  type: integer
+                  description: ID do utilizador a candidatar-se
+                fase:
+                  type: integer
+                  description: Fase a atribuir a candidatura
+                estado:
+                  type: string
+                  description: Estado inical da candidatura
+                emailReferencia:
+                  type: string
+                  description: Email de referência
+            encoding:
+              color:
+                style: form
+                explode: false
+      responses:
+        '200':
+          description: Candidatura atualizada com sucesso!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: 'Erro a submeter (Culpa do cliente, falta de paramters, ou candidatura/fase não existentes no sistema)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Erro a submeter (Culpa do servidor)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                
   /candidatura/tiposAnotacoes:
     get:
       summary: Obter tipos de anotações
@@ -1063,29 +1156,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/candidatos/{idCandidato}/candidaturas':
-    get:
-      summary: Lista de candidaturas do candidato
-      description: Ao chamar este endpoint devolve a lista de candidaturas do candidato
-      operationId: getCandidaturasCandidato
-      tags:
-        - Candidatos
-      security:
-        - jwtAuth: []
-      parameters:
-        - name: idCandidato
-          in: path
-          required: true
-          description: O id do candidato a quem as candidaturas pertencem
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Uma lista das candidaturas
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Candidatura'
   '/candidatos/notificacoes':
     get:
       summary: Obter as notificações de um candidato
@@ -1173,6 +1243,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Candidato'
+  '/candidatos/{idCandidato}/candidaturas':
+    get:
+      summary: Candidaturas de um candidato
+      description: Ao chamar este endpoint devolve as candidaturas de um candidato
+      operationId: getCandidaturasCandidato
+      tags:
+        - Candidatos
+      security:
+        - jwtAuth: []
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: O id do candidato a obter
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Candidaturas de um candidato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Candidaturas'
+        '403':
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                                
   '/eventos/{idEvento}/info':
     get:
       summary: Dados/Informações de um evento
@@ -1866,6 +1965,41 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Propostas'
+  '/propostas/{idProposta}/permissoes':
+    get:
+      summary: Obter permissões de uma proposta
+      description: Ao chamar este endpoint será a lista de empregados de uma proposta, e as permissões definidas
+      operationId: getPermissoesProposta
+      tags:
+        - Propostas
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string
+      security:
+        - jwtAuth: []
+      responses:
+        '404':
+          description: Proposta não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '403':
+          description: Utilizador não autorizado a aceder o recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '200':
+          description: Lista de permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissoesProposta'                                
   '/propostas/areasDesenvolvimento':
     get:
       summary: Obter áreas de desenvolvimento
@@ -2362,6 +2496,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Mensagens'
+  '/competencias':
+    get:
+      summary: Obter competências técnicas definidas
+      description: Ao chamar este endpoint devolve as competências técnicas
+      operationId: getCompetenciasTecnicas
+      tags:
+        - Competências Técnicas
+      parameters:
+        - name: idCompetencia_Tecnica
+          in: query
+          required: false
+          description: O id da competência técnica
+          schema:
+            type: integer
+        - name: designacao
+          in: query
+          required: false
+          description: Nome da competência técnica
+          schema:
+            type: integer            
+      responses:
+        '200':
+          description: Retorna competências técnicas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompetenciasTecnicas'
+                                
 components:
   securitySchemes:
     jwtAuth:
@@ -2751,4 +2913,36 @@ components:
           type: integer
           format: int64
         titulo:
-          type: string          
+          type: string     
+    PermissoesProposta:
+      type: array
+      items:
+        $ref: '#/components/schemas/PermissaoProposta'
+    PermissaoProposta:
+      type: object
+      required:
+        - idEmpregado
+        - idProposta
+        - watcher
+        - gestorProposta
+        - avaliadorTecnico
+        - gestorEquipa
+      properties:
+        idEmpregado:
+          type: integer
+          format: int64
+        idProposta:
+          type: string 
+          format: int11
+        watcher:
+          type: integer
+          format: int1
+        gestorProposta:
+          type: integer
+          format: int1
+        avaliadorTecnico:
+          type: integer
+          format: int1
+        gestorEquipa:
+          type: integer
+          format: int1                                                               
