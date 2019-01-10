@@ -1289,8 +1289,20 @@ paths:
       security:
         - jwtAuth: []
       responses:
-        '404':
-          description: Evento não existente
+        '400':
+          description: Campos em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível devolver o evento.
           content:
             application/json:
               schema:
@@ -1336,12 +1348,24 @@ paths:
         - jwtAuth: []
       responses:
         '400':
-          description: Evento não existente
+          description: Campos em falta
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/eventos/{idEvento}/getEmpregados':
+        '500':
+          description: Não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível devolver os eventos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/eventos/{idEvento}/empregados':
     get:
       summary: Empregados associados a um evento
       description: Ao chamar este endpoint são retornados os empregados associados a um evento
@@ -1359,12 +1383,24 @@ paths:
         - jwtAuth: []
       responses:
         '400':
-          description: Evento não existente
+          description: Campos em falta
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/eventos/{idEvento}/getCandidato':
+        '500':
+          description: Não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível devolver os empregados.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  '/eventos/{idEvento}/candidato':
     get:
       summary: Candidato associado a um evento
       description: Ao chamar este endpoint é retornado o candidato associado ao evento
@@ -1382,7 +1418,19 @@ paths:
         - jwtAuth: []
       responses:
         '400':
-          description: Evento não existente
+          description: Campos em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível devolver o candidato.
           content:
             application/json:
               schema:
@@ -1405,7 +1453,19 @@ paths:
         - jwtAuth: []
       responses:
         '400':
-          description: Evento não existente
+          description: Campos em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível devolver os eventos.
           content:
             application/json:
               schema:
@@ -1428,7 +1488,19 @@ paths:
         - jwtAuth: []
       responses:
         '400':
-          description: Evento não existente
+          description: Campos em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível devolver os eventos.
           content:
             application/json:
               schema:
@@ -1451,7 +1523,19 @@ paths:
         - jwtAuth: []
       responses:
         '400':
-          description: Evento não existente
+          description: Campos em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível devolver os eventos.
           content:
             application/json:
               schema:
@@ -1474,7 +1558,19 @@ paths:
         - jwtAuth: []
       responses:
         '400':
-          description: Evento não existente
+          description: Campos em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível devolver as perguntas de sugestão
           content:
             application/json:
               schema:
@@ -1516,7 +1612,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
         '400':
-          description: Evento não existente
+          description: Campos em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível inserir as anotações.
           content:
             application/json:
               schema:
@@ -1558,7 +1666,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
         '400':
-          description: Evento não existente
+          description: Campos em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível associar o empregado ao evento.
           content:
             application/json:
               schema:
@@ -1612,7 +1732,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
         '400':
-          description: Pergunta_Sugestao não existente
+          description: Campos em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível inserir a pergunta de sugestão.
           content:
             application/json:
               schema:
@@ -1665,6 +1797,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+        '400':
+          description: Campos em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível inserir o evento.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
   '/eventos/{idEvento}/data':
     patch:
       summary: Alterar data de um evento
@@ -1702,7 +1846,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
         '400':
-          description: Evento não existente
+          description: Campos em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível atualizar a data.
           content:
             application/json:
               schema:
@@ -1744,7 +1900,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
         '400':
-          description: Evento não existente
+          description: Campos em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível atualizar a hora.
           content:
             application/json:
               schema:
@@ -1830,14 +1998,20 @@ paths:
       security:
         - jwtAuth: []
       responses:
-        '404':
-          description: Proposta não existente
+        '400':
+          description: Campos em falta
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
         '500':
-          description: Campos em falta
+          description: Não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível devolver a proposta.
           content:
             application/json:
               schema:
@@ -1859,8 +2033,20 @@ paths:
       security:
         - jwtAuth: []
       responses:
-        '404':
-          description: Fase não existente
+        '400':
+          description: Campos em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível devolver as fases.
           content:
             application/json:
               schema:
@@ -1907,6 +2093,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+        '400':
+          description: Campos em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível adicionar a fase.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
   '/propostas/{idProposta}/publicar':
     patch:
       summary: Mudar o estado de uma proposta para "Publicada"
@@ -1931,17 +2135,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/Propostas'
         '400':
-          description: Proposta não existente
+          description: Campos em falta
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Propostas'
-        '404':
-          description: Estado não existente
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Não existente
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Propostas'
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível publicar a proposta.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
   '/propostas/{idProposta}/encerrar':
     patch:
       summary: Mudar o estado de uma proposta para "Encerrada"
@@ -1965,6 +2175,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Propostas'
+        '400':
+          description: Campos em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '501':
+          description: Não foi possível encerrar a proposta.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
   '/propostas/{idProposta}/permissoes':
     get:
       summary: Obter permissões de uma proposta
