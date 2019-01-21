@@ -22,7 +22,7 @@ tags:
   - name: Mensagens
     description: Endpoints relativos às mensagens
   - name: Competências Técnicas
-    description: Endpoints relativos às competências técnicas    
+    description: Endpoints relativos às competências técnicas
 servers:
   - url: 'http://localhost:3000'
     description: Local machine
@@ -48,7 +48,7 @@ paths:
           required: true
           description: O id da proposta
           schema:
-            type: string      
+            type: string
       responses:
         '200':
           description: Um candidato
@@ -485,12 +485,6 @@ paths:
                 idCandidato:
                   type: integer
                   description: ID do utilizador a candidatar-se
-                fase:
-                  type: integer
-                  description: Fase a atribuir a candidatura
-                estado:
-                  type: string
-                  description: Estado inical da candidatura
                 emailReferencia:
                   type: string
                   description: Email de referência
@@ -584,7 +578,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                
+                $ref: '#/components/schemas/Status'
   /candidatura/tiposAnotacoes:
     get:
       summary: Obter tipos de anotações
@@ -756,7 +750,7 @@ paths:
   '/candidatos/{idCandidato}/experiencias':
     get:
       summary: Experiências profissionais de um candidato
-      description: Este endpoint devolve a experiência profissional do candidato
+      description: Este endpoint devolve a experiência profissional do candidato. Apenas o candidato a pode executar.
       operationId: getExperienciasProfisionais
       tags:
         - Candidatos
@@ -790,7 +784,7 @@ paths:
                 $ref: '#/components/schemas/Status'
     put:
       summary: Introduzir experiência profissional
-      description: Este endpoint deve inserir uma experiência profissional a um candidato
+      description: Este endpoint deve inserir uma experiência profissional a um candidato. Apenas o candidato a pode executar.
       operationId: putExperienciaProfissional
       tags:
         - Candidatos
@@ -851,7 +845,7 @@ paths:
                 $ref: '#/components/schemas/Status'
     patch:
       summary: Modificar experiência profissional de um candidato
-      description: Este endpoint deve modicar uma experiência profissional a um candidato
+      description: Este endpoint deve modicar uma experiência profissional a um candidato. Apenas o candidato a pode executar.
       operationId: PatchExperienciaProfissional
       tags:
         - Candidatos
@@ -919,7 +913,7 @@ paths:
                 $ref: '#/components/schemas/Status'
     delete:
       summary: Eliminar experiência profissional a um candidato
-      description: Este endpoint deve inserir uma experiência profissional a um candidato
+      description: Este endpoint deve inserir uma experiência profissional a um candidato. Apenas o candidato a pode executar.
       operationId: DeteteExperienciaProfissional
       tags:
         - Candidatos
@@ -966,7 +960,7 @@ paths:
   '/candidatos/{idCandidato}/competencias':
     get:
       summary: Competências técnicas de um candidato
-      description: Este endpoint devolve as experiências técnicas do candidato
+      description: Este endpoint devolve as experiências técnicas do candidato. Apenas o candidato a pode executar.
       operationId: getCompetenciasTecnicas
       tags:
         - Candidatos
@@ -994,7 +988,7 @@ paths:
                 $ref: '#/components/schemas/Status'
     put:
       summary: Introduzir competência técnica
-      description: Este endpoint deve inserir uma competência técnica a um candidato
+      description: Este endpoint deve inserir uma competência técnica a um candidato. Apenas o candidato a pode executar.
       operationId: putCompetenciasTecnicas
       tags:
         - Candidatos
@@ -1053,7 +1047,7 @@ paths:
                 $ref: '#/components/schemas/Status'
     patch:
       summary: Modificar competência técnica de um candidato
-      description: Este endpoint deve modicar uma competência técnica a um candidato
+      description: Este endpoint deve modicar uma competência técnica a um candidato. Apenas o candidato a pode executar.
       operationId: PatchCompetenciasCandidato
       tags:
         - Candidatos
@@ -1112,7 +1106,7 @@ paths:
                 $ref: '#/components/schemas/Status'
     delete:
       summary: Eliminar competência técnica a um candidato
-      description: Este endpoint deve eliminar uma competência técnica a um candidato
+      description: Este endpoint deve eliminar uma competência técnica a um candidato. Apenas o candidato a pode executar.
       operationId: DeteteCompetenciasCandidato
       tags:
         - Candidatos
@@ -1156,7 +1150,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/candidatos/notificacoes':
+  /candidatos/notificacoes:
     get:
       summary: Obter as notificações de um candidato
       description: Ao chamar este endpoint serão devolvidas as notificações de um candidato. O candidato é identificado através da chave JWT.
@@ -1175,23 +1169,23 @@ paths:
           required: false
           description: Offset de notificações (quantas notificações avança)
           schema:
-            type: string            
+            type: string
       security:
         - jwtAuth: []
       responses:
-        '403':
-          description: Utilizador sem permissões
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
         '200':
           description: Notificações de um candidato
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Notificacoes'
-  '/candidatos/readNotificacoes':
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /candidatos/readNotificacoes:
     post:
       summary: Marcar notificações como lidas
       description: Ao chamar este endpoint serão marcadas as notificações de um candidato como lidas. O candidato é identificado através da chave JWT.
@@ -1204,26 +1198,26 @@ paths:
           required: false
           description: Número de notificações a obter
           schema:
-            type: string    
+            type: string
       security:
         - jwtAuth: []
       responses:
+        '200':
+          description: Notificações marcadas como lidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
         '403':
           description: Utilizador sem permissões
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-        '200':
-          description: Notificações marcadas como lidas
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'                                    
   '/candidatos/{idCandidato}':
     get:
       summary: Informação de um candidato
-      description: Ao chamar este endpoint devolve informação pessoal de um candidato
+      description: Ao chamar este endpoint devolve informação pessoal de um candidato. Apenas o candidato a pode executar.
       operationId: getCandidatoById
       tags:
         - Candidatos
@@ -1246,7 +1240,7 @@ paths:
   '/candidatos/{idCandidato}/candidaturas':
     get:
       summary: Candidaturas de um candidato
-      description: Ao chamar este endpoint devolve as candidaturas de um candidato
+      description: Ao chamar este endpoint devolve as candidaturas de um candidato. Apenas o candidato a pode executar.
       operationId: getCandidaturasCandidato
       tags:
         - Candidatos
@@ -1271,7 +1265,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                                
+                $ref: '#/components/schemas/Status'
   '/eventos/{idEvento}/info':
     get:
       summary: Dados/Informações de um evento
@@ -1917,6 +1911,59 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+  '/propostas/{idProposta}/candidaturas':
+    get:
+      summary: Candidaturas a uma proposta de emprego
+      description: A invocação deste endpoint devolve a lista de candidaturas de uma proposta de emprego. A lista por defeito filtra os candidatos automáticamente excluídos. Para obter a lista de candidatos filtrados, a query paramter onlyFiltrados deve ser usada.
+      operationId: getCandidaturasDeUmaProposta
+      tags:
+        - Propostas
+      security:
+        - jwtAuth: []
+      parameters:
+        - name: onlyFiltrados
+          in: query
+          required: false
+          description: Caso queira filtrar para obter apenas os candidatos excluídos
+          schema:
+            type: string
+        - name: sortedByEvaluation
+          in: query
+          required: false
+          description: Se pretende sorteado pela avaliação
+          schema:
+            type: string
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Candidatura obtida com sucesso!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Candidaturas'
+        '400':
+          description: 'Erro a obter (Culpa do cliente, falta de paramters!)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: Erro a obter (Culpa do servidor)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                
   '/propostas/{idProposta}/associarEmpregado':
     put:
       summary: Associar empregado a uma proposta de emprego
@@ -2196,7 +2243,7 @@ paths:
   '/propostas/{idProposta}/permissoes':
     get:
       summary: Obter permissões de uma proposta
-      description: Ao chamar este endpoint será a lista de empregados de uma proposta, e as permissões definidas
+      description: 'Ao chamar este endpoint será a lista de empregados de uma proposta, e as permissões definidas'
       operationId: getPermissoesProposta
       tags:
         - Propostas
@@ -2210,25 +2257,25 @@ paths:
       security:
         - jwtAuth: []
       responses:
-        '404':
-          description: Proposta não existente
+        '200':
+          description: Lista de permissões
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: '#/components/schemas/PermissoesProposta'
         '403':
           description: Utilizador não autorizado a aceder o recurso
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-        '200':
-          description: Lista de permissões
+        '404':
+          description: Proposta não existente
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PermissoesProposta'                                
-  '/propostas/areasDesenvolvimento':
+                $ref: '#/components/schemas/Status'
+  /propostas/areasDesenvolvimento:
     get:
       summary: Obter áreas de desenvolvimento
       description: Ao chamar este endpoint será devolvida a lista de áreas de desenvolvimento definidas no sistema
@@ -2238,19 +2285,19 @@ paths:
       security:
         - jwtAuth: []
       responses:
-        '403':
-          description: Utilizador não autorizado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
         '200':
           description: Áreas de Desenvolvimento
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AreasDesenvolvimento'
-  '/propostas/posicoes':
+        '403':
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /propostas/posicoes:
     get:
       summary: Obter posições
       description: Ao chamar este endpoint será devolvida a lista de posições definidas no sistema
@@ -2260,21 +2307,21 @@ paths:
       security:
         - jwtAuth: []
       responses:
-        '403':
-          description: Utilizador não autorizado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
         '200':
           description: Posições possíveis no sistema
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Posicoes'
-  '/propostas/estados':
+        '403':
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /propostas/estados:
     get:
-      summary: Obter estados 
+      summary: Obter estados
       description: Ao chamar este endpoint será devolvida a lista de estados definidas no sistema
       operationId: getAreasDesenvolvimento
       tags:
@@ -2282,19 +2329,19 @@ paths:
       security:
         - jwtAuth: []
       responses:
+        '200':
+          description: Estados possíveis no sistema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Estados'
         '403':
           description: Utilizador não autorizado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-        '200':
-          description: Estados possíveis no sistema
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Estados'                                
-  '/propostas/':
+  /propostas/:
     put:
       summary: Adicionar uma proposta
       description: Ao chamar este endpoint uma proposta é adicionada
@@ -2335,7 +2382,7 @@ paths:
                   description: 'Documentos de uma proposta, em JSON (Array do objeto Documento, tendo o idDocumentoPedido)'
                 competencias:
                   type: object
-                  description: 'Competências de uma proposta, em JSON (Array do objeto Competência, tendo o idCompetencia_Tecnica e nível)'                  
+                  description: 'Competências de uma proposta, em JSON (Array do objeto Competência, tendo o idCompetencia_Tecnica e nível)'
             encoding:
               color:
                 style: form
@@ -2354,13 +2401,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                
+                $ref: '#/components/schemas/Status'
         '404':
           description: Estado não existente
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'                
+                $ref: '#/components/schemas/Status'
   '/empregado/{idEmpregado}/propostasAdicionadas':
     get:
       summary: Obter as propostas adicionadas de um empregado
@@ -2407,7 +2454,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  '/empregado/notificacoes':
+  /empregado/notificacoes:
     get:
       summary: Obter as notificações de um empregado
       description: Ao chamar este endpoint serão devolvidas as notificações de um empregado. O empregado é identificado através da chave JWT.
@@ -2426,23 +2473,23 @@ paths:
           required: false
           description: Offset de notificações (quantas notificações avança)
           schema:
-            type: string            
+            type: string
       security:
         - jwtAuth: []
       responses:
-        '403':
-          description: Utilizador sem permissões
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
         '200':
           description: Notificações de um empregado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Notificacoes'
-  '/empregado/readNotificacoes':
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /empregado/readNotificacoes:
     post:
       summary: Marcar notificações como lidas
       description: Ao chamar este endpoint serão marcadas as notificações de um empregado como lidas. O empregado é identificado através da chave JWT.
@@ -2455,22 +2502,22 @@ paths:
           required: false
           description: Número de notificações a obter
           schema:
-            type: string    
+            type: string
       security:
         - jwtAuth: []
       responses:
+        '200':
+          description: Notificações marcadas como lidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
         '403':
           description: Utilizador sem permissões
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-        '200':
-          description: Notificações marcadas como lidas
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'                                    
   '/candidatos/{idCandidato}/caixamensagens/{idGestorProposta}/mensagens':
     get:
       summary: Mensagens recebidas do gestor da proposta pelo candidato a uma proposta de emprego
@@ -2724,7 +2771,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Mensagens'
-  '/competencias':
+  /competencias:
     get:
       summary: Obter competências técnicas definidas
       description: Ao chamar este endpoint devolve as competências técnicas
@@ -2743,7 +2790,7 @@ paths:
           required: false
           description: Nome da competência técnica
           schema:
-            type: integer            
+            type: integer
       responses:
         '200':
           description: Retorna competências técnicas
@@ -2751,7 +2798,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CompetenciasTecnicas'
-                                
 components:
   securitySchemes:
     jwtAuth:
@@ -3069,7 +3115,7 @@ components:
         - read
         - titulo
         - descricao
-        - createdAt 
+        - createdAt
         - TipoNotificacao
       properties:
         idNotificacao:
@@ -3085,7 +3131,7 @@ components:
         createdAt:
           type: string
         TipoNotificacao:
-          $ref: '#/components/schemas/TipoNotificacao'            
+          $ref: '#/components/schemas/TipoNotificacao'
     TipoNotificacao:
       type: object
       required:
@@ -3096,19 +3142,19 @@ components:
           type: integer
           format: int64
         descricao:
-          type: string 
+          type: string
     Estados:
       type: array
       items:
-        $ref: '#/components/schemas/Estado'        
+        $ref: '#/components/schemas/Estado'
     AreasDesenvolvimento:
       type: array
       items:
-        $ref: '#/components/schemas/AreaDesenvolvimento' 
+        $ref: '#/components/schemas/AreaDesenvolvimento'
     Posicoes:
       type: array
       items:
-        $ref: '#/components/schemas/Posicao'        
+        $ref: '#/components/schemas/Posicao'
     Estado:
       type: object
       required:
@@ -3141,7 +3187,7 @@ components:
           type: integer
           format: int64
         titulo:
-          type: string     
+          type: string
     PermissoesProposta:
       type: array
       items:
@@ -3160,7 +3206,7 @@ components:
           type: integer
           format: int64
         idProposta:
-          type: string 
+          type: string
           format: int11
         watcher:
           type: integer
@@ -3173,4 +3219,4 @@ components:
           format: int1
         gestorEquipa:
           type: integer
-          format: int1                                                               
+          format: int1
