@@ -411,7 +411,7 @@ paths:
   '/candidatura/{idProposta}':
     get:
       summary: Submissão de uma candidatura a uma proposta de emprego
-      description: A invocação deste endpoint envolve a submissão de uma candidatura a uma proposta de emprego publicada
+      description: A invocação deste endpoint envolve a submissão de uma candidatura a uma proposta de emprego publicada. Notar que as competências TÊM que já estar adicionadas, estando sujeito ao Simplihire filtrar a candidatura!
       operationId: submitCandidatura
       tags:
         - Candidatura
