@@ -410,9 +410,8 @@ paths:
                     type: string
   '/candidatura/{idProposta}':
     get:
-      summary: Submissão de uma candidatura a uma proposta de emprego
-      description: A invocação deste endpoint envolve a submissão de uma candidatura a uma proposta de emprego publicada. Notar que as competências TÊM que já estar adicionadas, estando sujeito ao Simplihire filtrar a candidatura!
-      operationId: submitCandidatura
+      summary: Procura de uma candidatura
+      operationId: getCandidatura
       tags:
         - Candidatura
       security:
@@ -420,14 +419,8 @@ paths:
       parameters:
         - name: idCandidato
           in: query
-          required: false
-          description: Caso queira pesquisar por um candidato em específico
-          schema:
-            type: string
-        - name: sortedByEvaluation
-          in: query
-          required: false
-          description: Se pretende sorteado pela avaliação
+          required: true
+          description: ID do Candidato
           schema:
             type: string
         - name: idProposta
@@ -442,7 +435,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Candidaturas'
+                $ref: '#/components/schemas/Candidatura'
         '400':
           description: 'Erro a obter (Culpa do cliente, falta de paramters!)'
           content:
@@ -460,7 +453,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: '#/components/schemas/Status'  
     post:
       summary: Submissão de uma candidatura a uma proposta de emprego
       description: A invocação deste endpoint envolve a submissão de uma candidatura a uma proposta de emprego publicada
@@ -747,6 +740,23 @@ paths:
           description: Utilizador já existente
         '500':
           description: Erro no lado do servidor
+  /auth/me:
+    post:
+      summary: Informações do utilizador
+      description: Informação básicas do utilizador, como nome, data de nascimento,....
+      operationId: login
+      tags:
+        - Autenticação
+      responses:
+        '200':
+          description: Informação do utilizador (observar tipo de content!)
+          content:
+            application/json/Candidato:
+              schema:
+                $ref: '#/components/schemas/Candidato'
+            application/json/Empregado:
+              schema:
+                $ref: '#/components/schemas/Empregado'             
   '/candidatos/{idCandidato}/experiencias':
     get:
       summary: Experiências profissionais de um candidato
@@ -2045,6 +2055,12 @@ paths:
       security:
         - jwtAuth: []
       responses:
+        '200':
+          description: Informações de uma proposta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Proposta'      
         '400':
           description: Campos em falta
           content:
@@ -2080,6 +2096,12 @@ paths:
       security:
         - jwtAuth: []
       responses:
+        '200':
+          description: Fases de uma proposta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fases'      
         '400':
           description: Campos em falta
           content:
@@ -2341,7 +2363,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
-  /propostas/:
+  /propostas:
     put:
       summary: Adicionar uma proposta
       description: Ao chamar este endpoint uma proposta é adicionada
@@ -2408,6 +2430,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+    get:
+      summary: Obter propostas
+      description: Obter informações de todas as propostas, ou de uma dada empresa, ou cujo empregado está associado, ou ambas.
+      operationId: get Propostas
+      tags:
+        - Propostas
+      parameters:
+        - name: idEmpresa
+          in: query
+          required: false
+          description: Filtrar propostas por empresa
+          schema:
+            type: string    
+        - name: funcionarioAssociado
+          in: query
+          required: false
+          description: Especificar por propostas cujo funcionário esteja associado à proposta
+          schema:
+            type: string                            
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Propostas'
+        '403':
+          description: Utilizador não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '404':
+          description: Estado não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                
   '/empregado/{idEmpregado}/propostasAdicionadas':
     get:
       summary: Obter as propostas adicionadas de um empregado
@@ -2798,6 +2860,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CompetenciasTecnicas'
+             
+        '403':
+          description: Utilizador não autorizado (Token não válida)                
 components:
   securitySchemes:
     jwtAuth:
@@ -2807,20 +2872,40 @@ components:
   schemas:
     Candidato:
       required:
-        - id
+        - idCandidato
         - nome
         - email
-        - universidade
+        - dataNascimento
       properties:
-        id:
+        idCandidato:
           type: integer
           format: int64
         nome:
           type: string
         email:
           type: string
-        universidade:
+        dataNascimento:
+          type: string          
+    Empregado:
+      required:
+        - idEmpregado
+        - nome
+        - email
+        - dataNascimento
+        - empresa
+      properties:
+        idCandidato:
+          type: integer
+          format: int64
+        nome:
           type: string
+        email:
+          type: string
+        dataNascimento:
+          type: string
+        empresa:
+          type: integer
+          format: int64          
     Candidatos:
       type: array
       items:
@@ -2850,6 +2935,9 @@ components:
         Fase:
           type: object
           $ref: '#/components/schemas/Fase'
+        Candidato:
+          type: object
+          $ref: '#/components/schemas/Candidato'          
     Fase:
       required:
         - idFase
@@ -2874,20 +2962,38 @@ components:
         $ref: '#/components/schemas/Candidatura'
     Proposta:
       required:
-        - id
-        - empresa
-        - posicao
-        - dataLimite
+        - idProposta
+        - designacao
+        - creationDate
+        - lastUpdate
+        - datainicio
+        - datafim
+        - AreaDesenvolvimento
+        - Posicao
+        - Estado
+        - Fase
       properties:
-        id:
+        idProposta:
           type: integer
           format: int64
-        empresa:
+        designacao:
           type: string
-        posicao:
+        creationDate:
           type: string
-        dataLimite:
+        lastUpdate:
           type: string
+        datainicio:
+          type: string
+        datafim:
+          type: string                    
+        AreaDesenvolvimento:
+          $ref: '#/components/schemas/AreaDesenvolvimento'
+        Posicao:
+          $ref: '#/components/schemas/Posicao'
+        Estado:
+          $ref: '#/components/schemas/Estado'
+        Fase:
+          $ref: '#/components/schemas/Fase'                             
     Propostas:
       type: array
       items:
@@ -3046,6 +3152,10 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Anotacao'
+    Fases:
+      type: array
+      items:
+        $ref: '#/components/schemas/Fase'        
     Tipo_Anotacao:
       type: object
       required:
