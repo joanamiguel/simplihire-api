@@ -2824,6 +2824,154 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+                
+                
+  '/disponibilidade/{idCandidato}/apagarDisponibilidade/{idDisponibilidade}':
+    delete:
+      summary: Apagar disponibilidade
+      description: Ao chamar este endpoint apaga a disponibilidade
+      operationId:
+      tags:
+        - Disponibilidade
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: id do candidato a quem vai ser apagada a disponibilidade
+          schema:
+            type: string
+        - name: idDisponibilidade
+          in: path
+          required: true
+          description: id da disponibilidade  que vai ser apagada
+          schema:
+            type: string        
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: Disponibilidade apagada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '400':
+          description: Não foi possível eliminar disponibilidade
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status' 
+        '404':
+          description: Disponibilidade não existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status' 
+        '500':
+          description: Erro a apagar
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status' 
+        
+      
+  '/disponibilidade/{idCandidato}/getDisponibilidade':
+    get :
+      summary: Lista disponibilidades do candidato
+      description: Ao chamar este endpoint lista todas as disponibilidades do candidato
+      operationId: getDisponibilidade
+      tags:
+        - Disponibilidade
+      parameters:
+        - name: idCandidato
+          in: path
+          required: true
+          description: id do candidato a quem vai-se listar as disponibilidades
+          schema:
+            type: string
+      security:
+      - jwtAuth: []
+      responses:
+        
+        '400':
+          description: Candidato não existe/Candidato não tem disponibilidades definidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status' 
+             
+  
+  '/disponibilidade/:idDisponibilidade/setDisponibilidade/:idCandidato/':
+    put :
+      summary: Adiciona disponibilidade do candidato
+      description: Ao chamar este endpoint é adicionada uma nova disponibilidade do candidato
+      operationId: setDisponibilidade
+      tags:
+        - Disponibilidade
+      parameters:
+        - name: idDisponibilidade
+          in: path
+          required: true
+          description: id da disponibilidade a adicionar
+          schema:
+            type: string
+      security:
+      - jwtAuth: []
+      
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - data
+                - disponibilidade
+                - data_inicio
+                - data_fim
+              properties:
+                data:
+                  type: string
+                  description: data do dia a definir disponibilidade
+                disponibilidade:
+                  type: boolean
+                  description: Booleano da disponibilidade 0->disponivel 1-> indisponivel
+                data_inicio:
+                  type: string
+                  description: hora inicio do intervalo de disponibilidade
+                data_fim:
+                  type: string
+                  description: hora fim do intervalo de disponibilidade
+            encoding:
+              color:
+                style: form
+                explode: false
+      
+      responses:
+        '200':
+          description: Adicionada disponibilidade com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status' 
+      
+        '400':
+          description: Candidado nao existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status' 
+        
+        
+        '500':
+          description: Campos em falta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'                  
+                
+                
+                
+                
   /UI/:
     get:
       summary: Resumo da actividade
