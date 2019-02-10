@@ -174,6 +174,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+  'relatoriosBI/{idProposta}/getRelatoriosBI':
+    get:
+      summary: Obter relatórios de Business Intelligence
+      operationId: getRelatoriosBI
+      tags:
+        - RelatoriosBI
+      security:
+        - jwtAuth: []
+      parameters:
+        - name: idProposta
+          in: path
+          required: true
+          description: O id da proposta
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Relatórios obtido com sucesso!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelatoriosBI'
+        '400':
+          description: Erro a obter documento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelatoriosBI'
+        '403':
+          description: Utilizador sem permissões
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelatoriosBI'
+        '500':
+          description: Erro a obter informação da BD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelatoriosBI'
   '/candidatura/{idProposta}/documentos':
     get:
       summary: Obter informações dos documentos de uma candidatura
@@ -3477,6 +3517,24 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/AreaDesenvolvimento'
+    RelatoriosBI:
+      type: object
+      required:
+        - avaliação por proposta
+        - idade por proposta
+        - número de propostas por área de desenvolvimento
+        - tempo de uma proposta finalizar
+      properties:
+        avaliação por proposta:
+          type: object
+        idade por proposta:
+          type: object
+        número de propostas por área de desenvolvimento:
+          type: object
+        tempo de uma proposta finalizar:
+          type: object
+      items:
+        $ref: '#/components/schemas/RelatoriosBI'
     Posicoes:
       type: array
       items:
